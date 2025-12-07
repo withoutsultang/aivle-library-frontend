@@ -1,93 +1,99 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {Button, Typography, Box, ToggleButton, ToggleButtonGroup, Paper, Stack,
+import {
+    Typography, Box, Container,
 } from "@mui/material";
 import mockBooksResponse from "../data/mockBooks";
 import BookCard from "../components/BookCard";
 import Pagination from "../components/Pagination";
+import Header from "../components/Header";
+import SortButton from "../components/SortButton";
 
 export default function BookList() {
     const navigate = useNavigate();
-    const [order, setOrder] = useState("popular");
     const [page, setPage] = useState(1);
+    const [sortOrder, setSortOrder] = useState("최신순");
+    const [sortedBooks, setSortedBooks] = useState([]);
+
+    useEffect(() => {
+        const books = [...mockBooksResponse.data.books];
+        if (sortOrder === '최신순') {
+            books.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        } else if (sortOrder === '인기순') {
+            // 현재 인기순 데이터가 없으므로 제목순으로 대체
+            books.sort((a, b) => a.title.localeCompare(b.title));
+        }
+        setSortedBooks(books);
+        setPage(1); // 정렬 순서 변경 시 1페이지로 리셋
+    }, [sortOrder]);
+
+    const handleSortChange = (order) => {
+        setSortOrder(order);
+    };
 
     const ITEMS_PER_PAGE = 15;
 
-    // 책 배열(나중에 axios로 받아올 데이터)
-    const books = mockBooksResponse.data.books;
-
     // 데이터 잘라서 페이지네이션
     const startIndex = (page - 1) * ITEMS_PER_PAGE;
-    const paginatedBooks = books.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    const paginatedBooks = sortedBooks.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
     // 전체 페이지 수 계산
-    const totalPages = Math.ceil(books.length / ITEMS_PER_PAGE);
+    const totalPages = Math.ceil(sortedBooks.length / ITEMS_PER_PAGE);
+
+    const ITEMS_PER_ROW = 5; // 데스크톱 기준 한 줄에 표시할 아이템 수
+
+    // 페이지네이션된 데이터를 행 단위로 그룹화
+    const bookRows = [];
+    for (let i = 0; i < paginatedBooks.length; i += ITEMS_PER_ROW) {
+        bookRows.push(paginatedBooks.slice(i, i + ITEMS_PER_ROW));
+    }
 
     //UI 렌더링
     return (
         <Box>
-            {/* 타이틀과 아래 문구 */}
-            <Stack direction="row" justifyContent="space-between" alignItems="flex-end" mb={3}>
-                <Box>
-                    <Typography variant="h4" fontWeight={700}>
+            <Header title="모두의 서재" showButton={true} />
+            <Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="h5" component="h2" color="black">
                         도서 목록
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" mt={0.5}>
-                        등록된 책들을 확인하고 관리할 수 있어요.
-                    </Typography>
+                    <SortButton sortOrder={sortOrder} onSortChange={handleSortChange} />
                 </Box>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => navigate("/bookreg")}
-                >
-                    신규 도서 등록
-                </Button>
-            </Stack>
-
-            <Paper
-                variant="outlined"
-                sx={{
-                    mb: 3,
-                    px: 2,
-                    py: 1.5,
-                    borderRadius: 3,
-                    display: "flex",
-                    justifyContent: "flex-end",
-                }}
-            >
-                <ToggleButtonGroup
-                    size="small"
-                    value={order}
-                    exclusive
-                    onChange={(e, val) => val && setOrder(val)}
-                >
-                    <ToggleButton value="popular">인기순</ToggleButton>
-                    <ToggleButton value="latest">최신순</ToggleButton>
-                </ToggleButtonGroup>
-
-            </Paper>
-
-            <Box
-                display="grid"
-                gridTemplateColumns="repeat(5, 1fr)"
-                columnGap={2}
-                rowGap={3}
-            >
-                {paginatedBooks.map((book) => (
-                    <BookCard
-                        key={book.bookId}
-                        book={{
-                            id: book.bookId,
-                            title: book.title,
-                            image: book.coverImageUrl,
-                            createdAt: book.createdAt,
-                        }}
-                        onClick={() => navigate(`/detail/${book.bookId}`)}
-                    />
-                ))}
-            </Box>
-            <Pagination total={totalPages} page={page} onChange={setPage} />
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                    {bookRows.map((row, rowIndex) => (
+                        <Box
+                            key={rowIndex}
+                            sx={{
+                                borderBottom: '1px solid #e0e0e0', // 책장 선반
+                                pb: 5, // 선반과 책 사이의 간격
+                                display: 'grid',
+                                gridTemplateColumns: {
+                                    xs: "repeat(2, 1fr)",
+                                    sm: "repeat(3, 1fr)",
+                                    md: "repeat(4, 1fr)",
+                                    lg: `repeat(${ITEMS_PER_ROW}, 1fr)`,
+                                },
+                                columnGap: 4,
+                            }}
+                        >
+                            {row.map((book) => (
+                                <BookCard
+                                    key={book.bookId}
+                                    book={{
+                                        id: book.bookId,
+                                        title: book.title,
+                                        image: book.coverImageUrl,
+                                        createdAt: book.createdAt,
+                                        author: book.author,
+                                    }}
+                                    onClick={() => navigate(`/detail/${book.bookId}`)}
+                                />
+                            ))}
+                        </Box>
+                    ))}
+                </Box>
+                <Pagination total={totalPages} page={page} onChange={setPage} />
+            </Container>
         </Box>
     );
 }
