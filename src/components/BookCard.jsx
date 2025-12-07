@@ -10,7 +10,6 @@ export default function BookCard({ book, onClick }) {
                 height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                borderRadius: 3,
                 overflow: "hidden",
                 boxShadow: "0 4px 12px rgba(15,23,42,0.08)",
                 transition: "all 0.25s ease",
