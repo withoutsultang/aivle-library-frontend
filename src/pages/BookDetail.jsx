@@ -22,6 +22,19 @@ export default function BookDetail() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const handleDelete = async () => {
+        if (window.confirm("정말로 이 책을 삭제하시겠습니까?")) {
+            try {
+                await axios.delete(`${baseUrl}/books/${id}`);
+                alert("도서가 삭제되었습니다.");
+                navigate('/'); // 도서 목록 페이지로 이동
+            } catch (err) {
+                setError("도서 삭제에 실패했습니다.");
+                console.error(err);
+            }
+        }
+    };
+
     useEffect(() => {
         const fetchBookDetail = async () => {
             try {
@@ -87,8 +100,8 @@ export default function BookDetail() {
                 </Box>
 
                 <Paper elevation={3} sx={{ p: 4, borderRadius: 3, position: 'relative', overflow: 'visible' }}>
-                    {/* 우측 상단 수정 버튼 */}
-                    <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+                    {/* 우측 상단 수정/삭제 버튼 */}
+                    <Box sx={{ position: 'absolute', top: 16, right: 16, display: 'flex', gap: 1 }}>
                         <Button
                             color="inherit"
                             onClick={() => navigate(`/bookreg/${book.bookId}`, { state: { book } })} // id -> bookId 교체
@@ -100,6 +113,15 @@ export default function BookDetail() {
                             }}
                         >
                             ✎ 수정
+                        </Button>
+                        <Button
+                            color="error"
+                            onClick={handleDelete}
+                            sx={{
+                                textTransform: 'none',
+                            }}
+                        >
+                            삭제
                         </Button>
                     </Box>
 
