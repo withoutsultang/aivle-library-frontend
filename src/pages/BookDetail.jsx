@@ -30,6 +30,7 @@ export default function BookDetail() {
                 // 기존 상태에 API로부터 받은 전체 데이터를 병합/덮어쓰기
                 setBook(prevBook => ({ ...prevBook, ...response.data.data }));
                 setError(null);
+                console.log(response)
             } catch (err) {
                 setError("도서 정보를 불러오는데 실패했습니다.");
                 console.error(err);
@@ -90,7 +91,7 @@ export default function BookDetail() {
                     <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
                         <Button
                             color="inherit"
-                            onClick={() => navigate(`/bookreg/${book.id}`)}
+                            onClick={() => navigate(`/bookreg/${book.id}`, { state: { book } })}
                             sx={{
                                 borderColor: COLORS.BORDER_BEIGE,
                                 color: COLORS.TEXT_BROWN,

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import {
     Box,
@@ -14,9 +14,13 @@ import {
     FormControl
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { useLocation, useParams } from "react-router-dom";
 
 export default function BookReg() {
-    const [book, setBook] = useState({
+    const location = useLocation();
+    const { id } = useParams();
+
+    const [book, setBook] = useState(location.state?.book || {
         title: "",
         category: "",
         description: "",
@@ -24,6 +28,7 @@ export default function BookReg() {
         coverImageUrl: "",
         userId: 1 // userid 추가해야함(임의의 user만들어서 테스트)
     });
+
 
     const [open, setOpen] = useState(false);
     const [apiKey, setApiKey] = useState("");
