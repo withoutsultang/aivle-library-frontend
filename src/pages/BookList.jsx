@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-    Typography, Box, Container,
-} from "@mui/material";
-import mockBooksResponse from "../data/mockBooks";
+import {Typography, Box, Container} from "@mui/material";
 import BookCard from "../components/BookCard";
 import Pagination from "../components/Pagination";
 import Header from "../components/Header";
 import SortButton from "../components/SortButton";
+import axios from "axios";
+import { baseUrl } from "../config/constants";
 
 export default function BookList() {
     const navigate = useNavigate();
@@ -16,15 +15,27 @@ export default function BookList() {
     const [sortedBooks, setSortedBooks] = useState([]);
 
     useEffect(() => {
-        const books = [...mockBooksResponse.data.books];
-        if (sortOrder === '최신순') {
-            books.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        } else if (sortOrder === '인기순') {
-            // 현재 인기순 데이터가 없으므로 제목순으로 대체
-            books.sort((a, b) => a.title.localeCompare(b.title));
-        }
-        setSortedBooks(books);
-        setPage(1); // 정렬 순서 변경 시 1페이지로 리셋
+        const fetchBooks = async () => {
+            try {
+                const response = await axios.get(baseUrl + "/books");
+                const books = response.data.data || [];
+                console.log(response)
+                console.log(books)
+
+                if (sortOrder === '최신순') {
+                    books.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                } else if (sortOrder === '인기순') {
+                    books.sort((a, b) => b.viewCount - a.viewCount);
+                }
+                setSortedBooks(books);
+                setPage(1); // 데이터 로드 및 정렬 후 1페이지로 리셋
+            } catch (error) {
+                console.error("Failed to fetch books:", error);
+                setSortedBooks([]); // 에러 발생 시 빈 배열로 초기화
+            }
+        };
+
+        fetchBooks();
     }, [sortOrder]);
 
     const handleSortChange = (order) => {
@@ -52,7 +63,7 @@ export default function BookList() {
     return (
         <Box>
             <Header title="모두의 서재" showButton={true} />
-            <Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Container component="main" maxWidth="lg"  sx={{ mt: 0, mb: 0 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                     <Typography variant="h5" component="h2" color="black">
                         도서 목록
@@ -84,9 +95,16 @@ export default function BookList() {
                                         title: book.title,
                                         image: book.coverImageUrl,
                                         createdAt: book.createdAt,
-                                        author: book.author,
+                                        category: book.category,
                                     }}
-                                    onClick={() => navigate(`/detail/${book.bookId}`)}
+                                    onClick={() => navigate(`/detail/${book.bookId}`, {
+                                        state: {
+                                            title: book.title,
+                                            image: book.coverImageUrl,
+                                            createdAt: book.createdAt,
+                                            category: book.category,
+                                        }
+                                    })}
                                 />
                             ))}
                         </Box>

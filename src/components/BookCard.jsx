@@ -31,17 +31,8 @@ export default function BookCard({ book, onClick }) {
                         {book.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        {book.author}
+                        {book.category}
                     </Typography>
-                    {book.category && (
-                        <Chip
-                            label={book.category}
-                            size="small"
-                            sx={{ alignSelf: "flex-start", mt: 0.5 }}
-                            color="primary"
-                            variant="outlined"
-                        />
-                    )}
                 </Stack>
             </CardContent>
         </Card>
