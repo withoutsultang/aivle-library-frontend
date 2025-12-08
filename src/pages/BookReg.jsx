@@ -28,16 +28,16 @@ export default function BookReg() {
     const [apiKey, setApiKey] = useState("");
 
     // 모델 + 해상도 선택
-    const [selectedModel, setSelectedModel] = useState("1024");
+    const [selectedModel, setSelectedModel] = useState("1024x1792");
 
     // 이미지 목록(최대 3개 유지)
     const [images, setImages] = useState([]);
 
     // 해상도 매핑 (DALL·E 3용)
     const resolutionMap = {
-        "256": "256x256",
-        "512": "512x512",
-        "1024": "1024x1024",
+        "1024x1792": "1024x1792", // 세로형
+        "1024x1024": "1024x1024", // 정사각형
+        "1792x1024": "1792x1024", // 가로형
     };
 
     // 입력 변경
@@ -73,30 +73,21 @@ export default function BookReg() {
 
         const size = resolutionMap[selectedModel];
 
-        const prompt = `
-책 제목: ${book.title}
-장르: ${book.category}
+        // 따옴표 안의 핵심 단어 추출
+        const extractKeyword = (text) => {
+            if (!text) return '';
+            const match = text.match(/['']([^'']+)['']/);
+            return match ? match[1] : text.substring(0, 40);
+        };
 
-'${book.title}' 책 표지 일러스트 디자인.
+        const mainSubject = extractKeyword(book.description);
 
-[디자인 규칙]
-- 절대 사진처럼 보이면 안 됨
-- 절대 풍경, 도시 사진 금지
-- 절대 실사 느낌 금지
-- 책 표지처럼 시각 요소를 중앙에 배치
-- 단순하고 세련된 배경 그래픽
-- 텍스트 포함 금지
-
-[스타일]
-- 고급 일러스트 스타일
-- 파스텔톤 또는 부드러운 색감
-- 예술적인 그림
-- 그래픽 아트워크 스타일
-
-설명: ${book.description}
-
-위 내용을 기반으로 책의 분위기를 시각적으로 상징하는 일러스트 생성.
-        `;
+        const prompt = `Book cover design in modern flat illustration style.
+            Main subject: ${mainSubject}.
+            Genre: ${book.category}.
+            Visual style: minimalist geometric composition, symbolic cultural elements, sophisticated color harmony.
+            Design quality: professional bookstore standard, clear title space.
+            Avoid: photographs, 3D renders, realistic objects.`;
 
         console.log("📢 최종 Prompt 전송:", prompt);
 
@@ -205,9 +196,9 @@ export default function BookReg() {
 
                     <FormControl fullWidth sx={{ mb: 3 }}>
                         <Select value={selectedModel} onChange={handleModelChange}>
-                            <MenuItem value="256">DALL·E 3 — HD (256×256)</MenuItem>
-                            <MenuItem value="512">DALL·E 3 — FHD (512×512)</MenuItem>
-                            <MenuItem value="1024">DALL·E 3 — 기본 (1024×1024)</MenuItem>
+                            <MenuItem value="1024x1792">📖 세로형 (1024×1792) - 책 표지 추천</MenuItem>
+                            <MenuItem value="1024x1024">⬛ 정사각형 (1024×1024)</MenuItem>
+                            <MenuItem value="1792x1024">🖼️ 가로형 (1792×1024)</MenuItem>
                         </Select>
                     </FormControl>
 
