@@ -1,5 +1,5 @@
 import './App.css'
-import { BrowserRouter, Routes, Route, Navigate, useSearchParams, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { baseUrl } from "./config/constants.jsx";
@@ -13,17 +13,12 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 function AuthHandler({ setIsLoggedIn }) {
     const navigate = useNavigate();
-    const processed = useRef(false); // 처리 여부를 추적하기 위한 ref
+    const processed = useRef(false);
 
     useEffect(() => {
-        // 이미 처리했다면 다시 실행하지 않음
-        if (processed.current) {
-            return;
-        }
+        if (processed.current) return;
         processed.current = true;
 
-        // 네이버 로그인은 callbackUrl의 hash에 파라미터를 담아 리디렉션합니다.
-        // 따라서 window.location.hash에서 값을 파싱해야 합니다.
         const hash = window.location.hash.substring(1);
         const params = new URLSearchParams(hash);
         const code = params.get("code");
@@ -33,7 +28,7 @@ function AuthHandler({ setIsLoggedIn }) {
         console.log("AuthHandler params:", { code, state, accessToken });
 
         const handleLoginSuccess = (token) => {
-            localStorage.setItem("accessToken", token);
+            sessionStorage.setItem("accessToken", token); // 🔥 변경됨
             setIsLoggedIn(true);
             navigate("/booklist", { replace: true });
         };
@@ -60,30 +55,32 @@ function AuthHandler({ setIsLoggedIn }) {
                     }
                 })
                 .catch(err => {
-                    console.error("An error occurred during login:", err.response ? err.response.data : err.message);
+                    console.error("Error during login:", err);
                     handleLoginFailure(err);
                 });
         } else {
-             handleLoginFailure("Code or state not found in callback URL.");
+            handleLoginFailure("Missing code or state.");
         }
-    }, []); // 의존성 배열은 비워둠
+    }, []);
 
     return <div>로그인 처리 중...</div>;
 }
 
-
 function App() {
-    const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem('accessToken'));
+    // 🔥 로그인 상태 체크 sessionStorage로 변경
+    const [isLoggedIn, setIsLoggedIn] = useState(() => !!sessionStorage.getItem("accessToken"));
 
     return (
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Navigate to={isLoggedIn ? "/booklist" : "/login"} replace />} />
                 <Route path="/login" element={<LoginPage />} />
+
                 <Route
                     path="/api/v1/auth/naver/callback"
                     element={<AuthHandler setIsLoggedIn={setIsLoggedIn} />}
                 />
+
                 <Route path="/booklist" element={
                     <ProtectedRoute isLoggedIn={isLoggedIn}>
                         <BookList />
@@ -109,10 +106,11 @@ function App() {
                         <BookBody />
                     </ProtectedRoute>
                 } />
+
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </BrowserRouter>
     );
 }
 
-export default App
+export default App;
