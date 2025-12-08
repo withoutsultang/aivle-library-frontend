@@ -23,7 +23,7 @@ export default function BookList() {
                 console.log(books)
 
                 if (sortOrder === '최신순') {
-                    books.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    books.sort((a, b) => new Date(b.bookCreated) - new Date(a.bookCreated));
                 } else if (sortOrder === '인기순') {
                     books.sort((a, b) => b.viewCount - a.viewCount);
                 }
@@ -58,6 +58,7 @@ export default function BookList() {
     for (let i = 0; i < paginatedBooks.length; i += ITEMS_PER_ROW) {
         bookRows.push(paginatedBooks.slice(i, i + ITEMS_PER_ROW));
     }
+
 
     //UI 렌더링
     return (
@@ -94,14 +95,14 @@ export default function BookList() {
                                         id: book.bookId,
                                         title: book.title,
                                         image: book.coverImageUrl,
-                                        createdAt: book.createdAt,
+                                        createdAt: book.bookCreated,
                                         category: book.category,
                                     }}
                                     onClick={() => navigate(`/detail/${book.bookId}`, {
                                         state: {
                                             title: book.title,
                                             image: book.coverImageUrl,
-                                            createdAt: book.createdAt,
+                                            createdAt: book.bookCreated,
                                             category: book.category,
                                         }
                                     })}
