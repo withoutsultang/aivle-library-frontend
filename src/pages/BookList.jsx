@@ -10,53 +10,45 @@ import { baseUrl } from "../config/constants";
 
 export default function BookList() {
     const navigate = useNavigate();
-    const [page, setPage] = useState(1);
-    const [sortOrder, setSortOrder] = useState("최신순");
-    const [sortedBooks, setSortedBooks] = useState([]);
+    const [page, setPage] = useState(1); // 페이지는 1부터 시작
+    const [sortOrder, setSortOrder] = useState("LATEST");
+    const [books, setBooks] = useState([]);
+    const [totalPages, setTotalPages] = useState(0);
 
     useEffect(() => {
         const fetchBooks = async () => {
             try {
-                const response = await axios.get(baseUrl + "/books");
-                const books = response.data.data || [];
+                const response = await axios.get(baseUrl + "/books", {
+                    params: {
+                        sort: sortOrder,
+                        page: page - 1, // API는 페이지를 0부터 시작
+                        size: 15
+                    }
+                });
+                const { content, totalPages } = response.data.data;
                 console.log(response)
-                console.log(books)
-
-                if (sortOrder === '최신순') {
-                    books.sort((a, b) => new Date(b.bookCreated) - new Date(a.bookCreated));
-                } else if (sortOrder === '인기순') {
-                    books.sort((a, b) => b.viewCount - a.viewCount);
-                }
-                setSortedBooks(books);
-                setPage(1); // 데이터 로드 및 정렬 후 1페이지로 리셋
+                setBooks(content || []);
+                setTotalPages(totalPages || 0);
             } catch (error) {
                 console.error("Failed to fetch books:", error);
-                setSortedBooks([]); // 에러 발생 시 빈 배열로 초기화
+                setBooks([]); // 에러 발생 시 빈 배열로 초기화
             }
         };
 
         fetchBooks();
-    }, [sortOrder]);
+    }, [sortOrder, page]);
 
     const handleSortChange = (order) => {
         setSortOrder(order);
+        setPage(1); // 정렬 순서 변경 시 1페이지로 리셋
     };
-
-    const ITEMS_PER_PAGE = 15;
-
-    // 데이터 잘라서 페이지네이션
-    const startIndex = (page - 1) * ITEMS_PER_PAGE;
-    const paginatedBooks = sortedBooks.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
-    // 전체 페이지 수 계산
-    const totalPages = Math.ceil(sortedBooks.length / ITEMS_PER_PAGE);
 
     const ITEMS_PER_ROW = 5; // 데스크톱 기준 한 줄에 표시할 아이템 수
 
     // 페이지네이션된 데이터를 행 단위로 그룹화
     const bookRows = [];
-    for (let i = 0; i < paginatedBooks.length; i += ITEMS_PER_ROW) {
-        bookRows.push(paginatedBooks.slice(i, i + ITEMS_PER_ROW));
+    for (let i = 0; i < books.length; i += ITEMS_PER_ROW) {
+        bookRows.push(books.slice(i, i + ITEMS_PER_ROW));
     }
 
 
@@ -94,14 +86,14 @@ export default function BookList() {
                                     book={{
                                         id: book.bookId,
                                         title: book.title,
-                                        image: book.coverImageUrl,
+                                        coverImageUrl: book.coverImageUrl, // image 대신 coverImageUrl을 전달
                                         createdAt: book.bookCreated,
                                         category: book.category,
                                     }}
                                     onClick={() => navigate(`/detail/${book.bookId}`, {
                                         state: {
                                             title: book.title,
-                                            image: book.coverImageUrl,
+                                            coverImageUrl: book.coverImageUrl,
                                             createdAt: book.bookCreated,
                                             category: book.category,
                                         }
