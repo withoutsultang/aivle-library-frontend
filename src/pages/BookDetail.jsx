@@ -178,7 +178,7 @@ export default function BookDetail() {
                             <Box display="flex" justifyContent="center" mt={2}>
                                 <Button
                                     variant="contained"
-                                    onClick={() => navigate(`/bookbody/${book.id}`, { state: { title: book.title, content: book.content } })}
+                                    onClick={() => navigate(`/body`, { state: { title: book.title, content: book.content } })}
                                     sx={{
                                         backgroundColor: COLORS.BTN_BEIGE,
                                         color: '#fff',
