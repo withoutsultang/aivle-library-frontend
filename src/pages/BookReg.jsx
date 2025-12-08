@@ -14,11 +14,14 @@ import {
     FormControl
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate  } from "react-router-dom";
 
 export default function BookReg() {
     const location = useLocation();
     const { id } = useParams();
+    const navigate = useNavigate();
+
+    const isEditMode = !!id || location.state?.isEdit;
 
     const [book, setBook] = useState(location.state?.book || {
         title: "",
@@ -142,17 +145,28 @@ export default function BookReg() {
         }
 
         try {
-            await axios.post(
-                "http://localhost:8080/api/v1/books",
-                book,
-                { headers: { "Content-Type": "application/json" } }
-            );
-
-            alert("도서 등록 성공!");
-
+            if (isEditMode) {
+                // 수정 모드: PUT 요청
+                await axios.put(
+                    `http://localhost:8080/api/v1/books/${id}`,
+                    book,
+                    { headers: { "Content-Type": "application/json" } }
+                );
+                alert("도서 수정 완료!");
+                navigate(`/bookdetail/${id}`);
+            } else {
+                // 등록 모드: POST 요청
+                await axios.post(
+                    "http://localhost:8080/api/v1/books",
+                    book,
+                    { headers: { "Content-Type": "application/json" } }
+                );
+                alert("도서 등록 성공!");
+                navigate('/booklist');
+            }
         } catch (error) {
             console.error(error);
-            alert("도서 등록 실패!");
+            alert(isEditMode ? "도서 수정 실패!" : "도서 등록 실패!");
         }
     };
 
@@ -162,7 +176,7 @@ export default function BookReg() {
     return (
         <Box sx={{ maxWidth: 600, mx: "auto", mt: 5 }}>
             <Typography variant="h4" sx={{ mb: 3 }}>
-                📘 도서 신규 등록
+                {isEditMode ? "📝 도서 수정" : "📘 도서 신규 등록"}
             </Typography>
 
             <TextField fullWidth sx={{ mb: 2 }} label="제목" name="title" value={book.title} onChange={handleChange} />
@@ -176,7 +190,7 @@ export default function BookReg() {
             </Button>
 
             <Button fullWidth variant="contained" onClick={handleSubmit}>
-                등록
+                {isEditMode ? "수정" : "등록"}
             </Button>
 
             {/* --------------------------------------------- */}

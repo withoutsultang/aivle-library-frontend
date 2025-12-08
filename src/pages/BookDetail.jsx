@@ -91,7 +91,7 @@ export default function BookDetail() {
                     <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
                         <Button
                             color="inherit"
-                            onClick={() => navigate(`/bookreg/${book.id}`, { state: { book } })}
+                            onClick={() => navigate(`/bookreg/${book.bookId}`, { state: { book } })} // id -> bookId 교체
                             sx={{
                                 borderColor: COLORS.BORDER_BEIGE,
                                 color: COLORS.TEXT_BROWN,
