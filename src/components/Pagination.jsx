@@ -1,5 +1,5 @@
 import { Pagination as MuiPagination, Box } from "@mui/material";
-import { BUTTON_COLORS } from "../config/constants";
+import { COLORS } from "../config/constants";
 
 export default function Pagination({ total, page, onChange }) {
     return (
@@ -7,21 +7,19 @@ export default function Pagination({ total, page, onChange }) {
             <MuiPagination
                 count={total}
                 page={page}
-n                onChange={(e, value) => onChange(value)}
+                onChange={(e, value) => onChange(value)}
                 sx={{
                     '& .MuiPaginationItem-root.Mui-selected': {
-                        backgroundColor: BUTTON_COLORS.b,
+                        backgroundColor: COLORS.BTN_BEIGE,
                         color: 'white',
                         '&:hover': {
-                            backgroundColor: BUTTON_COLORS.brown,
+                            backgroundColor: COLORS.BTN_BEIGE_HOVER,
                         },
-                    },
-                    // 포커스 시 파란색 테두리(outline) 제거
-                    '& .MuiPaginationItem-root:focus': {
-                        outline: 'none',
                     },
                 }}
             />
         </Box>
     );
 }
+
+// note: Box의 mt (marginTop)은 pagination을 위로 띄우는 역할을 하며, 페이지 하단의 검은 띠와는 관련이 없습니다. 하단 띠는 전역 배경색 또는 고정된 footer에 의해 생길 가능성이 큽니다.

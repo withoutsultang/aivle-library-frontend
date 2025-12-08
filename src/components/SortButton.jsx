@@ -2,7 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Menu, MenuItem } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { BUTTON_COLORS } from '../config/constants';
+import { COLORS } from '../config/constants';
 
 export default function SortButton({ sortOrder, onSortChange }) {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -30,7 +30,7 @@ export default function SortButton({ sortOrder, onSortChange }) {
                 aria-expanded={open ? 'true' : undefined}
                 onClick={handleClick}
                 endIcon={<ArrowDropDownIcon />}
-                sx={{ color: BUTTON_COLORS.TEXT_BROWN }}
+                sx={{ color: COLORS.TEXT_BROWN }}
             >
                 {sortOrder}
             </Button>

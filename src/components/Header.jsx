@@ -9,7 +9,7 @@ import {
     MenuItem,
     Box,
 } from "@mui/material";
-import { BUTTON_COLORS } from "../config/constants";
+import { COLORS } from "../config/constants";
 
 export default function Header({
     title,
@@ -59,10 +59,10 @@ export default function Header({
                             sx={{
                                 minWidth: 100,
                                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: BUTTON_COLORS.BORDER_BEIGE,
+                                    borderColor: COLORS.BORDER_BEIGE,
                                 },
                                 '&:hover .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: BUTTON_COLORS.BORDER_BEIGE,
+                                    borderColor: COLORS.BORDER_BEIGE,
                                 },
                                 backgroundColor: "white",
                             }}
@@ -77,9 +77,9 @@ export default function Header({
                             variant="contained"
                             onClick={() => navigate("/bookreg")}
                             sx={{
-                                backgroundColor: BUTTON_COLORS.BG_BEIGE,
+                                backgroundColor: COLORS.BTN_BEIGE,
                                 "&:hover": {
-                                    backgroundColor: BUTTON_COLORS.BG_BEIGE_HOVER,
+                                    backgroundColor: COLORS.BTN_BEIGE_HOVER,
                                 },
                             }}
                         >
@@ -92,7 +92,7 @@ export default function Header({
                             variant="text"
                             onClick={onLogout}
                             sx={{
-                                color: BUTTON_COLORS.TEXT_BROWN,
+                                color: COLORS.TEXT_BROWN,
                                 fontWeight: 500,
                                 ml: 1,
                             }}
