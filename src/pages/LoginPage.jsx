@@ -1,24 +1,14 @@
-import {
-    Box,
-    Typography,
-    Button,
-    Paper,
-    Avatar,
-    Container,
-    CircularProgress
-} from '@mui/material';
+import {Box,Typography,Button,Paper,Avatar,Container} from '@mui/material';
 import { MenuBook } from '@mui/icons-material';
-import { useState } from 'react';
-import axios from 'axios';
-import { baseUrl } from '../config/constants';
 
 export default function LoginPage() {
-    const [loading, setLoading] = useState(false);
+    const clientId = import.meta.env.VITE_NAVER_CLIENT_ID;
+    const callbackUrl = import.meta.env.VITE_NAVER_CALLBACK_URL;
 
     const handleNaverLogin = () => {
         const naverLogin = new window.naver.LoginWithNaverId({
-            clientId: "iDSSGzZkXrdPHMLmryHt", // 네이버 클라이언트 ID
-            callbackUrl: "http://localhost:5173/api/v1/auth/naver/callback", // 콜백 URL
+            clientId: clientId, // 네이버 클라이언트 ID
+            callbackUrl: callbackUrl, // 콜백 URL
             isPopup: false, // 팝업 여부
             loginButton: { color: "green", type: 3, height: 60 },
         });
@@ -80,27 +70,24 @@ export default function LoginPage() {
                         </Typography>
                     </Box>
 
-                    {loading ? (
-                        <CircularProgress sx={{ mt: 2 }} />
-                    ) : (
-                        <Button
-                            variant="contained"
-                            onClick={handleNaverLogin}
-                            sx={{
-                                backgroundColor: '#03C75A', // 네이버 그린
-                                '&:hover': {
-                                    backgroundColor: '#02b351',
-                                },
-                                mt: 2,
-                                width: '100%',
-                                fontWeight: 'bold'
-                            }}
-                        >
-                            네이버 아이디로 로그인
-                        </Button>
-                    )}
+                    <Button
+                        variant="contained"
+                        onClick={handleNaverLogin}
+                        sx={{
+                            backgroundColor: '#03C75A', // 네이버 그린
+                            '&:hover': {
+                                backgroundColor: '#02b351',
+                            },
+                            mt: 2,
+                            width: '100%',
+                            fontWeight: 'bold'
+                        }}
+                    >
+                        네이버 아이디로 로그인
+                    </Button>
                 </Paper>
             </Container>
         </Box>
     );
 }
+
