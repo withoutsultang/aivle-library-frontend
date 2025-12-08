@@ -19,7 +19,7 @@ export default function BookCard({ book, onClick }) {
                 },
             }}
         >
-            <CardMedia component="img" height="220" image={book.image} alt={book.title} />
+            <CardMedia component="img" height="220" image={book.coverImageUrl} alt={book.title} />
 
             <CardContent sx={{ flexGrow: 1 }}>
                 <Stack spacing={1}>
