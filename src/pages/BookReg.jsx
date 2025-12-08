@@ -22,6 +22,7 @@ export default function BookReg() {
         description: "",
         content: "",
         coverImageUrl: "",
+        userId: 1 // userid 추가해야함(임의의 user만들어서 테스트)
     });
 
     const [open, setOpen] = useState(false);
@@ -130,6 +131,11 @@ export default function BookReg() {
     // ⭐ 도서 등록 API
     // ---------------------------------------------
     const handleSubmit = async () => {
+        if (!book.title || !book.category || !book.description || !book.content) {
+            alert("제목, 카테고리, 설명, 본문은 필수 입력 항목입니다.");
+            return;
+        }
+
         try {
             await axios.post(
                 "http://localhost:8080/api/v1/books",
