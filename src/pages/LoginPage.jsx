@@ -14,18 +14,13 @@ export default function LoginPage() {
         });
         naverLogin.init();
 
-        // 네이버 로그인 버튼을 직접 클릭하는 효과를 줍니다.
-        // 실제 버튼은 숨겨져 있을 수 있습니다.
+
         const naverLoginButton = document.getElementById("naverIdLogin").firstChild;
         if (naverLoginButton) {
             naverLoginButton.click();
         } else {
-            // 버튼을 찾지 못한 경우에 대한 폴백 처리
             naverLogin.getLoginStatus((status) => {
                 if (!status) {
-                    // 로그인 창을 직접 띄웁니다.
-                    // 이 방법은 팝업 차단에 의해 막힐 수 있습니다.
-                    // getLoginStatus 콜백 내에서가 아니면 동작하지 않을 수 있습니다.
                     console.error("Naver login button not found.");
                 }
             });

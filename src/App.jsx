@@ -28,7 +28,7 @@ function AuthHandler({ setIsLoggedIn }) {
         console.log("AuthHandler params:", { code, state, accessToken });
 
         const handleLoginSuccess = (token) => {
-            sessionStorage.setItem("accessToken", token); // 🔥 변경됨
+            sessionStorage.setItem("accessToken", token);
             setIsLoggedIn(true);
             navigate("/booklist", { replace: true });
         };

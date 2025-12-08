@@ -174,8 +174,9 @@ export default function BookReg() {
     // JSX 출력
     // ---------------------------------------------
     return (
-        <Box sx={{ maxWidth: 600, mx: "auto", mt: 5 }}>
-            <Typography variant="h4" sx={{ mb: 3 }}>
+        <Box sx={{ maxWidth: 600, mx: "auto" }}>
+
+            <Typography variant="h4" sx={{ mb: 3, color : "black" }}>
                 {isEditMode ? "📝 도서 수정" : "📘 도서 신규 등록"}
             </Typography>
 
