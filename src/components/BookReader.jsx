@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import {COLORS} from "../config/constants.jsx";
 import { Box, Typography, Button, Paper, IconButton } from "@mui/material";
 import { ArrowBackIosNew, ArrowForwardIos } from '@mui/icons-material';
 
@@ -25,7 +26,7 @@ export default function BookReader({ title, paginatedContent, totalPages, page, 
                 px: { xs: 2, sm: 4, md: 10 },
                 py: { xs: 4, md: 6 },
                 bgcolor: "#faf7ef", // 종이 느낌 배경
-                minHeight: '100vh',
+                minHeight: { xs: 'auto', md: '70vh' },
                 overflow: 'auto',
             }}
         >
@@ -34,6 +35,9 @@ export default function BookReader({ title, paginatedContent, totalPages, page, 
                     variant="text"
                     size="large"
                     onClick={onBack}
+                    sx={{
+                        color: COLORS.BTN_BEIGE,
+                    }}
                 >
                     ← 요약
                 </Button>
@@ -56,7 +60,8 @@ export default function BookReader({ title, paginatedContent, totalPages, page, 
                     disabled={page === 1}
                     sx={{
                         position: 'absolute',
-                        left: '-70px',
+                        // 작은 화면에서는 좌우 버튼이 컨테이너 밖으로 튀어나오지 않도록 반응형으로 조정
+                        left: { xs: '8px', md: '-40px' },
                     }}
                 >
                     <ArrowBackIosNew fontSize="large" />
@@ -73,7 +78,8 @@ export default function BookReader({ title, paginatedContent, totalPages, page, 
                         columnCount: { xs: 1, md: 2 },
                         columnGap: "60px",
                         textAlign: "justify",
-                        minHeight: { xs: 300, md: 600 },
+                        // 본문 최소 높이도 낮춰서 전체 Paper 높이를 줄임
+                        minHeight: { xs: 200, md: 400 },
                         flexGrow: 1,
                     }}
                 >
@@ -85,7 +91,7 @@ export default function BookReader({ title, paginatedContent, totalPages, page, 
                     disabled={page === totalPages}
                     sx={{
                         position: 'absolute',
-                        right: '-70px',
+                        right: { xs: '8px', md: '-40px' },
                     }}
                 >
                     <ArrowForwardIos fontSize="large" />
@@ -107,4 +113,3 @@ BookReader.propTypes = {
     onPageChange: PropTypes.func.isRequired,
     onBack: PropTypes.func.isRequired,
 };
-

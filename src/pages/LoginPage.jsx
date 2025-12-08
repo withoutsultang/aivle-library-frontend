@@ -8,8 +8,9 @@ import {
     Container
 } from '@mui/material';
 import { MenuBook } from '@mui/icons-material';
-import { BUTTON_COLORS } from '../config/constants';
+import { COLORS } from '../config/constants';
 
+//로그인
 export default function LoginPage({ setIsLoggedIn }) {
     const navigate = useNavigate();
 
@@ -57,15 +58,15 @@ export default function LoginPage({ setIsLoggedIn }) {
                         variant="contained"
                         onClick={handleLogin}
                         sx={{
-                            backgroundColor: BUTTON_COLORS.BG_BEIGE,
+                            backgroundColor: COLORS.BTN_BEIGE,
                             '&:hover': {
-                                backgroundColor: BUTTON_COLORS.BG_BEIGE_HOVER,
+                                backgroundColor: COLORS.BG_BEIGE_HOVER,
                             },
                             mt: 2,
                             width: '100%',
                         }}
                     >
-                        임시 로그인 버튼
+                        네이버 로그인 버튼
                     </Button>
                 </Paper>
             </Container>
