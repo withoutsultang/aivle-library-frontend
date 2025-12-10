@@ -2,11 +2,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Typography, Box, Container } from "@mui/material";
-import BookCard from "../components/BookCard";
-import Pagination from "../components/Pagination";
-import Header from "../components/Header";
-import SortButton from "../components/SortButton";
-import api from "../api";
+import BookCard from "../components/BookCard.jsx";
+import Pagination from "../components/Pagination.jsx";
+import Header from "../components/Header.jsx";
+import SortButton from "../components/SortButton.jsx";
+import api from "../api.jsx";
 
 export default function BookList() {
     const navigate = useNavigate();
@@ -70,8 +70,9 @@ export default function BookList() {
             <Header
                 title="모두의 서재"
                 showButton={true}
-                showLogout={true}      // 🔥 로그아웃 버튼 보이기
-                onLogout={handleLogout} // 🔥 클릭 시 실행
+                showLogout={true}
+                showMyPage={true}
+                onLogout={handleLogout}
             />
 
             <Container component="main" maxWidth="lg">

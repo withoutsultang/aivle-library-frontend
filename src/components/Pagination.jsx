@@ -1,5 +1,5 @@
 import { Pagination as MuiPagination, Box } from "@mui/material";
-import { COLORS } from "../config/constants";
+import { COLORS } from "../../../../../Downloads/FrontEnd-main (3)/FrontEnd-main/src/config/constants.jsx";
 
 export default function Pagination({ total, page, onChange }) {
     return (

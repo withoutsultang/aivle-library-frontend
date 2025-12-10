@@ -9,17 +9,18 @@ import {
     MenuItem,
     Box,
 } from "@mui/material";
-import { COLORS } from "../config/constants";
+import { COLORS } from "../../../../../Downloads/FrontEnd-main (3)/FrontEnd-main/src/config/constants.jsx";
 
 export default function Header({
-    title,
-    order,
-    onOrderChange,
-    showSort = false,
-    showButton = false,
-    onLogout,
-    showLogout = false
-}) {
+                                   title,
+                                   order,
+                                   onOrderChange,
+                                   showSort = false,
+                                   showButton = false,
+                                   onLogout,
+                                   showLogout = false,
+                                   showMyPage = false,
+                               }) {
     const navigate = useNavigate();
 
     return (
@@ -35,7 +36,7 @@ export default function Header({
         >
             <Toolbar
                 sx={{
-                    minHeight: 48, // 얇게
+                    minHeight: 48,
                     px: { xs: 2 },
                     display: "flex",
                     justifyContent: "space-between",
@@ -87,6 +88,20 @@ export default function Header({
                         </Button>
                     )}
 
+                    {showMyPage && (
+                        <Button
+                            variant="text"
+                            onClick={() => navigate("/mypage")}
+                            sx={{
+                                color: COLORS.TEXT_BROWN,
+                                fontWeight: 500,
+                                ml: 1,
+                            }}
+                        >
+                            마이페이지
+                        </Button>
+                    )}
+
                     {showLogout && (
                         <Button
                             variant="text"
@@ -114,4 +129,5 @@ Header.propTypes = {
     showButton: PropTypes.bool,
     onLogout: PropTypes.func,
     showLogout: PropTypes.bool,
+    showMyPage: PropTypes.bool,
 };

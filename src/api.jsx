@@ -8,6 +8,7 @@ const api = axios.create({
 // 요청에 토큰 추가
 api.interceptors.request.use((config) => {
     const token = sessionStorage.getItem("accessToken");
+    console.log(token)
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
