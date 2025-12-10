@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import api from "../../../../../Downloads/FrontEnd-main (3)/FrontEnd-main/src/api.jsx";
+import api from "../api.jsx";
 import {
     Box,
     TextField,

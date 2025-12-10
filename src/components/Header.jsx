@@ -9,7 +9,7 @@ import {
     MenuItem,
     Box,
 } from "@mui/material";
-import { COLORS } from "../../../../../Downloads/FrontEnd-main (3)/FrontEnd-main/src/config/constants.jsx";
+import { COLORS } from "../config/constants.jsx";
 
 export default function Header({
                                    title,

@@ -2,13 +2,13 @@ import './App.css'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 
-import BookList from "../../../../Documents/GitHub/FrontEnd/src/pages/BookList";
-import BookDetail from "../../../../Documents/GitHub/FrontEnd/src/pages/BookDetail";
-import BookReg from "../../../../Documents/GitHub/FrontEnd/src/pages/BookReg";
-import BookBody from "../../../../Documents/GitHub/FrontEnd/src/pages/BookBody";
-import LoginPage from "../../../../Documents/GitHub/FrontEnd/src/pages/LoginPage";
-import MyPage from "../../../../Documents/GitHub/FrontEnd/src/pages/MyPage";
-import ProtectedRoute from "../../../../Documents/GitHub/FrontEnd/src/components/ProtectedRoute";
+import BookList from "./pages/BookList";
+import BookDetail from "./pages/BookDetail";
+import BookReg from "./pages/BookReg";
+import BookBody from "./pages/BookBody";
+import LoginPage from "./pages/LoginPage";
+import MyPage from "./pages/MyPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function AuthHandler({ setIsLoggedIn }) {
     const navigate = useNavigate();
