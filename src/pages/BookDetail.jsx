@@ -7,9 +7,9 @@ import {
     Divider,
 } from "@mui/material";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { COLORS } from "../config/constants";
+import { COLORS } from "../../../../../Downloads/FrontEnd-main (3)/FrontEnd-main/src/config/constants.jsx";
 import { useEffect, useState } from "react";
-import api from "../api";
+import api from "../../../../../Downloads/FrontEnd-main (3)/FrontEnd-main/src/api.jsx";
 
 export default function BookDetail() {
     const navigate = useNavigate();

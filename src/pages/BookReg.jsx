@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
+import api from "../../../../../Downloads/FrontEnd-main (3)/FrontEnd-main/src/api.jsx";
 import {
     Box,
     TextField,
@@ -11,7 +12,8 @@ import {
     IconButton,
     Select,
     MenuItem,
-    FormControl
+    FormControl,
+    CircularProgress
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useLocation, useParams, useNavigate  } from "react-router-dom";
@@ -35,6 +37,8 @@ export default function BookReg() {
 
     const [open, setOpen] = useState(false);
     const [apiKey, setApiKey] = useState("");
+
+    const [loading, setLoading] = useState(false);
 
     // 모델 + 해상도 선택
     const [selectedModel, setSelectedModel] = useState("1024x1792");
@@ -79,6 +83,8 @@ export default function BookReg() {
             alert("OpenAI API Key를 입력해주세요.");
             return;
         }
+
+        setLoading(true);
 
         const size = resolutionMap[selectedModel];
 
@@ -132,7 +138,9 @@ export default function BookReg() {
         } catch (error) {
             console.error("이미지 생성 오류:", error);
             alert("이미지 생성 중 문제가 발생했습니다.");
-        }
+        } finally {
+        setLoading(false);
+    }
     };
 
     // ---------------------------------------------
@@ -146,20 +154,29 @@ export default function BookReg() {
 
         try {
             if (isEditMode) {
-                // 수정 모드: PUT 요청
                 await axios.put(
                     `http://localhost:8080/api/v1/books/${id}`,
                     book,
-                    { headers: { "Content-Type": "application/json" } }
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${sessionStorage.getItem("accessToken")}`
+                        }
+                    }
                 );
+
                 alert("도서 수정 완료!");
                 navigate(`/bookdetail/${id}`);
             } else {
                 // 등록 모드: POST 요청
-                await axios.post(
-                    "http://localhost:8080/api/v1/books",
-                    book,
-                    { headers: { "Content-Type": "application/json" } }
+                // await axios.post(
+                //     "http://localhost:8080/api/v1/books",
+                //     book,
+                //     { headers: { "Content-Type": "application/json" } }
+                // );
+                await api.post(
+                    "/books",    // baseURL이 이미 http://localhost:8080/api/v1 라고 가정
+                    book
                 );
                 alert("도서 등록 성공!");
                 navigate('/booklist');
@@ -228,9 +245,23 @@ export default function BookReg() {
                         </Select>
                     </FormControl>
 
-                    <Button variant="contained" fullWidth sx={{ mb: 3 }} onClick={generateImage}>
-                        AI 표지 1장 생성
+                    <Button
+                        variant="contained"
+                        fullWidth
+                        sx={{ mb: 3 }}
+                        onClick={generateImage}
+                        disabled={loading}
+                    >
+                        {loading ? "이미지 생성 중..." : "AI 표지 1장 생성"}
                     </Button>
+
+                    {/* ⭐ 로딩 스피너 표시 */}
+                    {loading && (
+                        <Box sx={{ textAlign: "center", mb: 2 }}>
+                            <CircularProgress />
+                            <Typography sx={{ mt: 1 }}>AI가 이미지를 생성하고 있습니다...</Typography>
+                        </Box>
+                    )}
 
                     {images.length > 0 && (
                         <Box sx={{

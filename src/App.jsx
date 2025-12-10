@@ -1,15 +1,14 @@
 import './App.css'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
-import { baseUrl } from "./config/constants.jsx";
 
-import BookList from "./pages/BookList";
-import BookDetail from "./pages/BookDetail";
-import BookReg from "./pages/BookReg";
-import BookBody from "./pages/BookBody";
-import LoginPage from "./pages/LoginPage";
-import ProtectedRoute from "./components/ProtectedRoute";
+import BookList from "../../../../Documents/GitHub/FrontEnd/src/pages/BookList";
+import BookDetail from "../../../../Documents/GitHub/FrontEnd/src/pages/BookDetail";
+import BookReg from "../../../../Documents/GitHub/FrontEnd/src/pages/BookReg";
+import BookBody from "../../../../Documents/GitHub/FrontEnd/src/pages/BookBody";
+import LoginPage from "../../../../Documents/GitHub/FrontEnd/src/pages/LoginPage";
+import MyPage from "../../../../Documents/GitHub/FrontEnd/src/pages/MyPage";
+import ProtectedRoute from "../../../../Documents/GitHub/FrontEnd/src/components/ProtectedRoute";
 
 function AuthHandler({ setIsLoggedIn }) {
     const navigate = useNavigate();
@@ -19,13 +18,10 @@ function AuthHandler({ setIsLoggedIn }) {
         if (processed.current) return;
         processed.current = true;
 
-        const hash = window.location.hash.substring(1);
-        const params = new URLSearchParams(hash);
-        const code = params.get("code");
-        const state = params.get("state");
-        const accessToken = params.get("access_token");
+        const urlParams = new URLSearchParams(window.location.search);
 
-        console.log("AuthHandler params:", { code, state, accessToken });
+        // 백엔드에서 쿼리 파라미터로 넘겨준 'token'을 읽어옵니다.
+        const token = urlParams.get("token");
 
         const handleLoginSuccess = (token) => {
             sessionStorage.setItem("accessToken", token);
@@ -39,29 +35,19 @@ function AuthHandler({ setIsLoggedIn }) {
             navigate("/login", { replace: true });
         };
 
-        if (accessToken) {
-            handleLoginSuccess(accessToken);
-            return;
-        }
-
-        if (code && state) {
-            axios.get(`${baseUrl}/auth/naver/callback`, { params: { code, state } })
-                .then(res => {
-                    const { accessToken } = res.data.data;
-                    if (accessToken) {
-                        handleLoginSuccess(accessToken);
-                    } else {
-                        handleLoginFailure("Access token not found in response.");
-                    }
-                })
-                .catch(err => {
-                    console.error("Error during login:", err);
-                    handleLoginFailure(err);
-                });
+        if (token) {
+            // 토큰이 있으면 바로 성공 처리
+            handleLoginSuccess(token);
         } else {
-            handleLoginFailure("Missing code or state.");
+            // 토큰이 없거나, 다른 로그인 에러가 발생한 경우 (예: code/state가 남아있는 경우)
+            const errorParam = urlParams.get("error");
+            if (errorParam) {
+                handleLoginFailure(`Authentication error: ${errorParam}`);
+            } else {
+                handleLoginFailure("로그인 정보(토큰)를 찾을 수 없습니다.");
+            }
         }
-    }, []);
+    }, [navigate, setIsLoggedIn]);
 
     return <div>로그인 처리 중...</div>;
 }
@@ -77,7 +63,7 @@ function App() {
                 <Route path="/login" element={<LoginPage />} />
 
                 <Route
-                    path="/api/v1/auth/naver/callback"
+                    path="/oauth/success"
                     element={<AuthHandler setIsLoggedIn={setIsLoggedIn} />}
                 />
 
@@ -106,7 +92,11 @@ function App() {
                         <BookBody />
                     </ProtectedRoute>
                 } />
-
+                <Route path="/mypage" element={
+                    <ProtectedRoute isLoggedIn={isLoggedIn}>
+                        <MyPage />
+                    </ProtectedRoute>
+                } />
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </BrowserRouter>

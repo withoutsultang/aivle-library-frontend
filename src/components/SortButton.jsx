@@ -2,7 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Menu, MenuItem } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { COLORS } from '../config/constants';
+import { COLORS } from '../../../../../Downloads/FrontEnd-main (3)/FrontEnd-main/src/config/constants.jsx';
 
 const SORT_OPTIONS = {
     LATEST: '최신순',

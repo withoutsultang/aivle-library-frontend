@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Box, Container } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
-import BookReader from "../components/BookReader";
+import BookReader from "../components/BookReader.jsx";
 
 export default function BookBody() {
     const navigate = useNavigate();
