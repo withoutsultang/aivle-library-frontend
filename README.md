@@ -62,6 +62,8 @@ src
 
 ### Installation & Run
 
+*참고 **12/09일 기준으로 프런트는 env 파일이 필요 없습니다.**
+
 1. **Clone the repository**
     
     ```
@@ -74,13 +76,7 @@ src
     npm install
     ```
     
-3. **Configure Environment**`.env` 파일을 생성하고 백엔드 API 주소를 설정합니다.
-    
-    ```
-    VITE_API_BASE_URL=http://localhost:8080/api
-    ```
-    
-4. **Run Development Server**
+3. **Run Development Server**
     
     ```
     npm run dev
