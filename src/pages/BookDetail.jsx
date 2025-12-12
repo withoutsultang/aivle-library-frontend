@@ -9,8 +9,13 @@ import {
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { COLORS } from "../config/constants.jsx";
 import { useEffect, useState } from "react";
-import api from "../api.jsx";
+import api from "../config/api.jsx";
 
+/**
+ * 도서 상세 페이지
+ * - 도서의 상세 정보(제목, 저자, 내용 등)를 조회하고 표시합니다.
+ * - 본문 읽기, 수정, 삭제 기능을 제공합니다.
+ */
 export default function BookDetail() {
     const navigate = useNavigate();
     const { id } = useParams();
@@ -20,11 +25,12 @@ export default function BookDetail() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // 도서 삭제 핸들러
     const handleDelete = async () => {
         if (!window.confirm("정말로 이 책을 삭제하시겠습니까?")) return;
 
         try {
-            // 🔥 baseUrl + axios → api로 변경
+            // 🔥 baseUrl + axios → api로 변경: API를 통해 삭제 요청
             await api.delete(`/books/${id}`);
             alert("도서가 삭제되었습니다.");
             navigate("/");
@@ -46,6 +52,7 @@ export default function BookDetail() {
                 setLoading(true);
 
                 // 🔥 axios + baseUrl → api로 변경
+                // 병렬 요청: 상세 정보와 기본 정보를 동시에 가져옵니다.
                 const [detailRes, infoRes] = await Promise.all([
                     api.get(`/books/${id}/detail`),
                     api.get(`/books/${id}`),
@@ -289,7 +296,7 @@ export default function BookDetail() {
                                         borderRadius: 1,
                                         "&:hover": {
                                             backgroundColor:
-                                            COLORS.BTN_BEIGE_HOVER,
+                                                COLORS.BTN_BEIGE_HOVER,
                                         },
                                     }}
                                 >

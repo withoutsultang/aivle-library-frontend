@@ -1,20 +1,28 @@
-import {Box,Typography,Button,Paper,Avatar,Container} from '@mui/material';
+import { Box, Typography, Button, Paper, Avatar, Container } from '@mui/material';
 import { MenuBook } from '@mui/icons-material';
-
 import { useState } from 'react';
+import {baseUrl} from "../config/constants";
 import axios from 'axios';
 
-const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
+//const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
 
+/**
+ * 로그인 페이지
+ * - 네이버 OAuth 로그인을 시작하는 진입점입니다.
+ * - 백엔드로부터 로그인 URL을 받아 리다이렉트합니다.
+ */
 export default function LoginPage() {
     const [loading, setLoading] = useState(false);
 
+    // 네이버 로그인 핸들러
     const handleNaverLogin = async () => {
         try {
             setLoading(true);
+            // 백엔드에서 네이버 로그인 인증 URL 요청
             const response = await axios.get(`${baseUrl}/auth/naver/login-url`);
             const { loginUrl } = response.data.data;
 
+            // 해당 URL로 이동 (네이버 로그인 페이지)
             window.location.href = loginUrl;
         } catch (error) {
             console.error('Failed to get Naver login URL:', error);

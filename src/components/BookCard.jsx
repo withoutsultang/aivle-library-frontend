@@ -1,6 +1,12 @@
 // components/BookCard.jsx
 import { Card, CardMedia, CardContent, Typography, Chip, Stack } from "@mui/material";
 
+/**
+ * 도서 카드 컴포넌트
+ * - 목록에서 개별 도서 정보를 카드 형태로 보여줍니다.
+ * @param {Object} book - 도서 정보 객체 (title, coverImageUrl, category 등 포함)
+ * @param {Function} onClick - 카드 클릭 시 실행될 핸들러
+ */
 export default function BookCard({ book, onClick }) {
     return (
         <Card

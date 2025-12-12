@@ -10,6 +10,13 @@ import LoginPage from "./pages/LoginPage";
 import MyPage from "./pages/MyPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+/**
+ * AuthHandler 컴포넌트
+ * - OAuth 로그인 리다이렉트 처리 컴포넌트입니다.
+ * - 백엔드에서 전달된 토큰을 파싱하여 세션 스토리지에 저장하고,
+ * - 로그인 상태를 업데이트한 후 메인 페이지로 이동합니다.
+ */
+
 function AuthHandler({ setIsLoggedIn }) {
     const navigate = useNavigate();
     const processed = useRef(false);
@@ -52,6 +59,12 @@ function AuthHandler({ setIsLoggedIn }) {
     return <div>로그인 처리 중...</div>;
 }
 
+/**
+ * App 컴포넌트
+ * - 애플리케이션의 메인 진입점입니다.
+ * - 라우팅 설정 및 전역 로그인 상태 관리를 담당합니다.
+ */
+
 function App() {
     // 🔥 로그인 상태 체크 sessionStorage로 변경
     const [isLoggedIn, setIsLoggedIn] = useState(() => !!sessionStorage.getItem("accessToken"));
@@ -59,14 +72,18 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
+                {/* 기본 경로: 로그인 상태에 따라 리다이렉트 */}
                 <Route path="/" element={<Navigate to={isLoggedIn ? "/booklist" : "/login"} replace />} />
+                {/* 로그인 페이지 */}
                 <Route path="/login" element={<LoginPage />} />
 
+                {/* OAuth 성공 핸들러 경로 */}
                 <Route
                     path="/oauth/success"
                     element={<AuthHandler setIsLoggedIn={setIsLoggedIn} />}
                 />
 
+                {/* 보호된 라우트: 로그인한 사용자만 접근 가능 */}
                 <Route path="/booklist" element={
                     <ProtectedRoute isLoggedIn={isLoggedIn}>
                         <BookList />
