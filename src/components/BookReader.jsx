@@ -1,16 +1,29 @@
 import PropTypes from 'prop-types';
-import {COLORS} from "../config/constants.jsx";
+import { COLORS } from "../config/constants.jsx";
 import { Box, Typography, Button, Paper, IconButton } from "@mui/material";
 import { ArrowBackIosNew, ArrowForwardIos } from '@mui/icons-material';
 
+/**
+ * 도서 읽기/뷰어 컴포넌트
+ * - 페이지 단위로 도서 내용을 보여주는 뷰어입니다.
+ * - 이전/다음 페이지 네비게이션을 제공합니다.
+ * @param {string} title - 도서 제목
+ * @param {string} paginatedContent - 현재 페이지의 본문 내용
+ * @param {number} totalPages - 전체 페이지 수
+ * @param {number} page - 현재 페이지 번호
+ * @param {Function} onPageChange - 페이지 변경 핸들러
+ * @param {Function} onBack - 뒤로가기(목록/요약으로) 핸들러
+ */
 export default function BookReader({ title, paginatedContent, totalPages, page, onPageChange, onBack }) {
 
+    // 이전 페이지로 이동
     const handlePrevPage = () => {
         if (page > 1) {
             onPageChange(page - 1);
         }
     };
 
+    // 다음 페이지로 이동
     const handleNextPage = () => {
         if (page < totalPages) {
             onPageChange(page + 1);

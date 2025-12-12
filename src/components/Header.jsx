@@ -11,16 +11,30 @@ import {
 } from "@mui/material";
 import { COLORS } from "../config/constants.jsx";
 
+/**
+ * 공통 헤더 컴포넌트
+ * - 페이지 상단에 위치하며 타이틀, 정렬, 버튼, 로그아웃 등의 기능을 제공합니다.
+ * - props에 따라 노출되는 요소가 달라집니다.
+ *
+ * @param {string} title - 헤더 타이틀
+ * @param {string} order - 정렬 순서 (popular / latest 등)
+ * @param {Function} onOrderChange - 정렬 변경 핸들러
+ * @param {boolean} showSort - 정렬 선택 박스 노출 여부
+ * @param {boolean} showButton - 신규 도서 등록 버튼 노출 여부
+ * @param {Function} onLogout - 로그아웃 핸들러
+ * @param {boolean} showLogout - 로그아웃 버튼 노출 여부
+ * @param {boolean} showMyPage - 마이페이지 버튼 노출 여부
+ */
 export default function Header({
-                                   title,
-                                   order,
-                                   onOrderChange,
-                                   showSort = false,
-                                   showButton = false,
-                                   onLogout,
-                                   showLogout = false,
-                                   showMyPage = false,
-                               }) {
+    title,
+    order,
+    onOrderChange,
+    showSort = false,
+    showButton = false,
+    onLogout,
+    showLogout = false,
+    showMyPage = false,
+}) {
     const navigate = useNavigate();
 
     return (

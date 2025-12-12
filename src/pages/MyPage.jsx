@@ -4,8 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { Typography, Box, Container } from "@mui/material";
 import BookCard from "../components/BookCard.jsx";
 import Header from "../components/Header.jsx";
-import api from "../api.jsx";
+import api from "../config/api.jsx";
 
+/**
+ * 마이 페이지
+ * - 로그인한 사용자가 등록한 도서 목록을 보여줍니다.
+ */
 export default function BookList() {
     const navigate = useNavigate();
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import api from "../api.jsx";
+import api from "../config/api.jsx";
 import {
     Box,
     TextField,
@@ -16,8 +16,13 @@ import {
     CircularProgress
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useLocation, useParams, useNavigate  } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 
+/**
+ * 도서 등록/수정 페이지
+ * - 새로운 도서를 등록하거나 기존 도서를 수정합니다.
+ * - OpenAI DALL-E 3를 이용한 표지 생성 기능을 제공합니다.
+ */
 export default function BookReg() {
     const location = useLocation();
     const { id } = useParams();
@@ -77,6 +82,8 @@ export default function BookReg() {
 
     // ---------------------------------------------
     // ⭐ AI 이미지 생성 (DALL·E 3)
+    // - 사용자가 입력한 설명(description)이나 제목을 바탕으로
+    // - 표지 이미지를 생성하여 제안합니다.
     // ---------------------------------------------
     const generateImage = async () => {
         if (!apiKey) {
@@ -139,12 +146,14 @@ export default function BookReg() {
             console.error("이미지 생성 오류:", error);
             alert("이미지 생성 중 문제가 발생했습니다.");
         } finally {
-        setLoading(false);
-    }
+            setLoading(false);
+        }
     };
 
     // ---------------------------------------------
     // ⭐ 도서 등록 API
+    // - 작성된 폼 데이터를 서버로 전송합니다.
+    // - 수정 Мо드(isEditMode)일 경우 PUT, 신규일 경우 POST 요청을 보냅니다.
     // ---------------------------------------------
     const handleSubmit = async () => {
         if (!book.title || !book.category || !book.description || !book.content) {
@@ -193,7 +202,7 @@ export default function BookReg() {
     return (
         <Box sx={{ maxWidth: 600, mx: "auto" }}>
 
-            <Typography variant="h4" sx={{ mb: 3, color : "black" }}>
+            <Typography variant="h4" sx={{ mb: 3, color: "black" }}>
                 {isEditMode ? "📝 도서 수정" : "📘 도서 신규 등록"}
             </Typography>
 
