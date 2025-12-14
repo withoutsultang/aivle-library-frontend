@@ -3,7 +3,6 @@ import { Box, Container } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import BookReader from "../components/BookReader.jsx";
 
-//도서 본문 페이지
 /**
  * 도서 본문 조회 페이지
  * - 전체 텍스트를 페이지 단위로 나누어 보여줍니다.

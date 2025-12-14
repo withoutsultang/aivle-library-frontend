@@ -1,5 +1,5 @@
 import { Pagination as MuiPagination, Box } from "@mui/material";
-import { COLORS } from "../config/constants.jsx";
+import { COLORS } from "../config/constants.js";
 
 /**
  * 페이지네이션 컴포넌트

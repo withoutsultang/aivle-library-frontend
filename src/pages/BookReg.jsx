@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import api from "../config/api.jsx";
+import api from "../config/api.js";
 import {
     Box,
     TextField,

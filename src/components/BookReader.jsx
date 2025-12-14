@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { COLORS } from "../config/constants.jsx";
+import { COLORS } from "../config/constants.js";
 import { Box, Typography, Button, Paper, IconButton } from "@mui/material";
 import { ArrowBackIosNew, ArrowForwardIos } from '@mui/icons-material';
 

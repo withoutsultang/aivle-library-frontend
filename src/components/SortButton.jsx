@@ -2,7 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Menu, MenuItem } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { COLORS } from '../config/constants.jsx';
+import { COLORS } from '../config/constants.js';
 
 /**
  * 정렬 옵션 정의
