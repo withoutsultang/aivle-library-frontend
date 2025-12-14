@@ -25,14 +25,24 @@
 src
 ├─ App.jsx              # 라우팅 및 전역 레이아웃
 ├─ pages
-│   ├─ MainPage         # 도서 목록, 검색, 페이지네이션
-│   ├─ NewBookPage      # 도서 등록 폼 & AI 표지 생성기
+│   ├─ BookListPage     # 도서 목록, 검색, 페이지네이션
+│   ├─ LoginPage        # 로그인
+│   ├─ BookReg          # 도서 등록 폼 & AI 표지 생성기
+│   ├─ MyPage           # 작성한 도서 목록
+│   ├─ BookBody         # 도서 본문 보기
 │   └─ BookDetailPage   # 도서 상세 보기, 수정/삭제 액션
 ├─ components
-│   ├─ common           # Button, Input, Modal 등 공통 컴포넌트
-│   ├─ book             # BookCard, BookForm
-│   └─ auth             # LoginButton (Naver)
-└─ api                  # Axios 인스턴스 및 API 호출 함수 모음
+│   ├─ BookCard         # 도서 리스트의 북카드
+│   ├─ BookCover        # 북카드 및 상세 페이지의 도서 커버
+│   ├─ BookReader       # 도서 본문 리더
+│   ├─ Header           # 앱 바
+│   ├─ Pagination       # 리스트 하단 페이지 표시
+│   ├─ ProtectRoute     # 로그인시 라우트 가능 페이지 구분
+│   └─ sortButton       # 정렬버튼
+├─ config                   
+│   ├─ api              # # Axios 인스턴스
+│   └─ constants        # 전역 상수 관리(baseUrl, 버튼 색상)
+└─ assets               # 이미지
 ```
 
 ## ✨ Key Features (UI/UX)
