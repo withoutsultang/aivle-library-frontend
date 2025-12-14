@@ -12,5 +12,8 @@ export const COLORS = {
     BTN_BEIGE_HOVER: '#906b44',
 };
 
-//API 기본 URL
+/**
+ * API 기본 URL
+ * env 파일로 관리할 수도 있지만 현재 로컬 개발에서만 돌아가는 간단한 프로젝트라 constants로 관리
+ */
 export const baseUrl = 'http://localhost:8080/api/v1';

@@ -40,7 +40,6 @@ export default function BookDetail() {
         if (!window.confirm("정말로 이 책을 삭제하시겠습니까?")) return;
 
         try {
-            // 🔥 baseUrl + axios → api로 변경: API를 통해 삭제 요청
             await api.delete(`/books/${id}`);
             alert("도서가 삭제되었습니다.");
             navigate("/");
