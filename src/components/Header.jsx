@@ -9,7 +9,7 @@ import {
     MenuItem,
     Box,
 } from "@mui/material";
-import { COLORS } from "../config/constants.jsx";
+import { COLORS } from "../config/constants.js";
 
 /**
  * 공통 헤더 컴포넌트

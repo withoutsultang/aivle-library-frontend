@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Typography, Box, Container } from "@mui/material";
 import BookCard from "../components/BookCard.jsx";
 import Header from "../components/Header.jsx";
-import api from "../config/api.jsx";
+import api from "../config/api.js";
 
 /**
  * 마이 페이지

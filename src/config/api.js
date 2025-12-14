@@ -1,5 +1,9 @@
 import axios from "axios";
-import { baseUrl } from "./constants.jsx";
+import { baseUrl } from "./constants";
+
+/**
+   api 요청시 사용
+ */
 
 const api = axios.create({
     baseURL: baseUrl,
@@ -7,8 +11,7 @@ const api = axios.create({
 
 // 요청에 토큰 추가
 api.interceptors.request.use((config) => {
-    const token = sessionStorage.getItem("accessToken");
-    console.log(token)
+    const token = sessionStorage.getItem("accessToken"); //서버에서 받아 저장해둔 토큰
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }

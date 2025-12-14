@@ -1,10 +1,8 @@
 import { Box, Typography, Button, Paper, Avatar, Container } from '@mui/material';
 import { MenuBook } from '@mui/icons-material';
 import { useState } from 'react';
-import {baseUrl} from "../config/constants";
+import {baseUrl} from "../config/constants.js";
 import axios from 'axios';
-
-//const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
 
 /**
  * 로그인 페이지

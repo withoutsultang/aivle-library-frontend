@@ -6,7 +6,7 @@ import BookCard from "../components/BookCard.jsx";
 import Pagination from "../components/Pagination.jsx";
 import Header from "../components/Header.jsx";
 import SortButton from "../components/SortButton.jsx";
-import api from "../config/api.jsx";
+import api from "../config/api.js";
 
 /**
  * 도서 목록 페이지 (메인)
@@ -125,6 +125,7 @@ export default function BookList() {
                                         coverImageUrl: book.coverImageUrl,
                                         createdAt: book.bookCreated,
                                         category: book.category,
+                                        nickname: book.user.nickname,
                                     }}
                                     onClick={() =>
                                         navigate(`/detail/${book.bookId}`, {
