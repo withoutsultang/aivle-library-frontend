@@ -17,47 +17,47 @@ import ProtectedRoute from "./components/ProtectedRoute";
  * - 로그인 상태를 업데이트한 후 메인 페이지로 이동합니다.
  */
 
+import api from "./config/api.js";
+import { useUser } from "./store/UserContext";
+
 function AuthHandler({ setIsLoggedIn }) {
     const navigate = useNavigate();
     const processed = useRef(false);
+
+    const { setUser } = useUser(); // ✅ 전역 store
 
     useEffect(() => {
         if (processed.current) return;
         processed.current = true;
 
         const urlParams = new URLSearchParams(window.location.search);
-
-        // 백엔드에서 쿼리 파라미터로 넘겨준 'token'을 읽어옵니다.
         const token = urlParams.get("token");
 
-        const handleLoginSuccess = (token) => {
-            sessionStorage.setItem("accessToken", token);
-            setIsLoggedIn(true);
-            navigate("/booklist", { replace: true });
-        };
+        const handleLoginSuccess = async (token) => {
+            try {
+                sessionStorage.setItem("accessToken", token);
+                setIsLoggedIn(true);
 
-        const handleLoginFailure = (error) => {
-            console.error("Login failed:", error);
-            alert("로그인에 실패했습니다. 다시 시도해주세요.");
-            navigate("/login", { replace: true });
-        };
+                const res = await api.get("/me");
+                setUser(res.data.data); // ✅ 전역 user 저장
 
-        if (token) {
-            // 토큰이 있으면 바로 성공 처리
-            handleLoginSuccess(token);
-        } else {
-            // 토큰이 없거나, 다른 로그인 에러가 발생한 경우 (예: code/state가 남아있는 경우)
-            const errorParam = urlParams.get("error");
-            if (errorParam) {
-                handleLoginFailure(`Authentication error: ${errorParam}`);
-            } else {
-                handleLoginFailure("로그인 정보(토큰)를 찾을 수 없습니다.");
+                navigate("/booklist", { replace: true });
+            } catch (e) {
+                console.error("me 호출 실패:", e);
+                sessionStorage.removeItem("accessToken");
+                alert("로그인 처리 중 오류가 발생했습니다.");
+                navigate("/login", { replace: true });
             }
-        }
-    }, [navigate, setIsLoggedIn]);
+        };
+
+        if (token) handleLoginSuccess(token);
+        else navigate("/login", { replace: true });
+    }, [navigate, setIsLoggedIn, setUser]);
 
     return <div>로그인 처리 중...</div>;
 }
+
+
 
 /**
  * App 컴포넌트
@@ -68,6 +68,23 @@ function AuthHandler({ setIsLoggedIn }) {
 function App() {
     // 🔥 로그인 상태 체크 sessionStorage로 변경
     const [isLoggedIn, setIsLoggedIn] = useState(() => !!sessionStorage.getItem("accessToken"));
+    const { user, setUser, clearUser } = useUser();
+
+    useEffect(() => {
+        const token = sessionStorage.getItem("accessToken");
+        if (!token || user) return;
+
+        (async () => {
+            try {
+                const res = await api.get("/me");
+                setUser(res.data.data);
+            } catch (e) {
+                sessionStorage.removeItem("accessToken");
+                clearUser();
+                setIsLoggedIn(false);
+            }
+        })();
+    }, [user, setUser, clearUser]);
 
     return (
         <BrowserRouter>
