@@ -13,6 +13,8 @@ import noImageIcon from "../assets/icons/noImage.svg";
  * - sx: MUI sx 스타일 객체 (이미지 또는 placeholder 컨테이너에 적용)
  * - imgProps: 추가로 img 엘리먼트에 전달할 props
  * - placeholderSize: placeholder svg 크기 (px)
+ * 현재 이미지가 없을 때만 noImage.svg 출력중인데, 이외에도 URL이 잘못되었거나 하는 문제의 경우에는 수정이 필요해 보임,
+ * 입력을 할 때 파일 업로드 방식을 사용하는 것도 방법인듯, 일단은 여기서 마무리
  */
 export default function BookCover({ src, alt = "cover", sx = {}, imgProps = {}, placeholderSize = 64 }) {
     const hasImage = !!src;

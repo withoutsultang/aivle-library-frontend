@@ -19,6 +19,7 @@ const SORT_OPTIONS = {
  * - 드롭다운 메뉴를 통해 정렬 방식을 선택할 수 있습니다.
  * @param {string} sortOrder - 현재 정렬 상태 (키 값)
  * @param {Function} onSortChange - 정렬 변경 시 호출되는 핸들러
+ * 선택시 리스트 페이지에 정렬 기준을 알려주고 리스트에서 호출
  */
 export default function SortButton({ sortOrder, onSortChange }) {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -50,6 +51,7 @@ export default function SortButton({ sortOrder, onSortChange }) {
             >
                 {SORT_OPTIONS[sortOrder]}
             </Button>
+            {/* 정렬 옵션 메뉴 */}
             <Menu
                 id="sort-menu"
                 anchorEl={anchorEl}

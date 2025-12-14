@@ -51,12 +51,13 @@ export default function BookList() {
         fetchBooks();
     }, [sortOrder, page]);
 
+    //정렬
     const handleSortChange = (order) => {
         setSortOrder(order);
         setPage(1);
     };
 
-    // 🔥 헤더에 넘겨줄 로그아웃 함수
+    //헤더에 넘겨줄 로그아웃 함수
     const handleLogout = () => {
         sessionStorage.removeItem("accessToken");
         alert("로그아웃 되었습니다.");
@@ -99,6 +100,7 @@ export default function BookList() {
                     />
                 </Box>
 
+                {/* 도서 목록 그리드 화면 사이즈 별로 카드 리스트 갯수가 달라짐 참고용*/}
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 5 }}>
                     {bookRows.map((row, rowIndex) => (
                         <Box

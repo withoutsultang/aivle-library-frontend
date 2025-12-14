@@ -20,27 +20,34 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import api from "./config/api.js";
 import { useUser } from "./store/UserContext";
 
+//로그인
 function AuthHandler({ setIsLoggedIn }) {
     const navigate = useNavigate();
     const processed = useRef(false);
 
-    const { setUser } = useUser(); // ✅ 전역 store
+    const { setUser } = useUser();
 
     useEffect(() => {
+        //한번 실행시 재진입 방지
         if (processed.current) return;
         processed.current = true;
 
+        //URL에서 토큰 파싱
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get("token");
 
+        //로그인 성공
         const handleLoginSuccess = async (token) => {
             try {
+                //토큰 세션스토리지에 저장
                 sessionStorage.setItem("accessToken", token);
                 setIsLoggedIn(true);
 
+                //사용자 정보 조회 및 저장
                 const res = await api.get("/me");
-                setUser(res.data.data); // ✅ 전역 user 저장
+                setUser(res.data.data); //
 
+                //메인 페이지로 이동
                 navigate("/booklist", { replace: true });
             } catch (e) {
                 console.error("me 호출 실패:", e);
@@ -50,7 +57,9 @@ function AuthHandler({ setIsLoggedIn }) {
             }
         };
 
+        //토큰이 있으면 handleLoginSuccess() 실행
         if (token) handleLoginSuccess(token);
+        //없으면 로그인 페이지로 이동
         else navigate("/login", { replace: true });
     }, [navigate, setIsLoggedIn, setUser]);
 
@@ -66,15 +75,16 @@ function AuthHandler({ setIsLoggedIn }) {
  */
 
 function App() {
-    // 🔥 로그인 상태 체크 sessionStorage로 변경
     const [isLoggedIn, setIsLoggedIn] = useState(() => !!sessionStorage.getItem("accessToken"));
     const { user, setUser, clearUser } = useUser();
 
     useEffect(() => {
+        //세션스토리지에 저장된 토큰 가져오기
         const token = sessionStorage.getItem("accessToken");
         if (!token || user) return;
 
-        (async () => {
+        //유저 정보 가져오기
+        async function fetchUser() {
             try {
                 const res = await api.get("/me");
                 setUser(res.data.data);
@@ -83,7 +93,9 @@ function App() {
                 clearUser();
                 setIsLoggedIn(false);
             }
-        })();
+        }
+
+        fetchUser();
     }, [user, setUser, clearUser]);
 
     return (
@@ -101,31 +113,37 @@ function App() {
                 />
 
                 {/* 보호된 라우트: 로그인한 사용자만 접근 가능 */}
+                {/* 도서 목록 페이지 */}
                 <Route path="/booklist" element={
                     <ProtectedRoute isLoggedIn={isLoggedIn}>
                         <BookList />
                     </ProtectedRoute>
                 } />
+                {/* 도서 상세 페이지 */}
                 <Route path="/detail/:id" element={
                     <ProtectedRoute isLoggedIn={isLoggedIn}>
                         <BookDetail />
                     </ProtectedRoute>
                 } />
+                {/* 도서 등록 페이지 */}
                 <Route path="/bookreg" element={
                     <ProtectedRoute isLoggedIn={isLoggedIn}>
                         <BookReg />
                     </ProtectedRoute>
                 } />
+                {/* 도서 수정 페이지 (등록과 같은 페이지 활용) */}
                 <Route path="/bookreg/:id" element={
                     <ProtectedRoute isLoggedIn={isLoggedIn}>
                         <BookReg />
                     </ProtectedRoute>
                 } />
+                {/* 도서 본문 페이지 */}
                 <Route path="/body" element={
                     <ProtectedRoute isLoggedIn={isLoggedIn}>
                         <BookBody />
                     </ProtectedRoute>
                 } />
+                {/* 마이 페이지 */}
                 <Route path="/mypage" element={
                     <ProtectedRoute isLoggedIn={isLoggedIn}>
                         <MyPage />

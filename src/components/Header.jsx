@@ -14,7 +14,7 @@ import { COLORS } from "../config/constants.js";
 /**
  * 공통 헤더 컴포넌트
  * - 페이지 상단에 위치하며 타이틀, 정렬, 버튼, 로그아웃 등의 기능을 제공합니다.
- * - props에 따라 노출되는 요소가 달라집니다.
+ * - props에 따라 렌더링 되는 요소가 달라집니다.
  *
  * @param {string} title - 헤더 타이틀
  * @param {string} order - 정렬 순서 (popular / latest 등)
@@ -29,6 +29,7 @@ export default function Header({
     title,
     order,
     onOrderChange,
+    //값을 받아 렌더링 되는 요소들
     showSort = false,
     showButton = false,
     onLogout,

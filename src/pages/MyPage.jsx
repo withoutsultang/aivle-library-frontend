@@ -15,14 +15,14 @@ export default function BookList() {
 
     const [books, setBooks] = useState([]);
 
+
+    //api 호출
     useEffect(() => {
         const fetchMyBooks = async () => {
             try {
                 const res = await api.get("/mypage/mybooks");
 
-                console.log(res.data.data); // 👉 여기 찍으면 [ { bookId: 6, ... } ]
-
-                setBooks(res.data.data ?? []);  // ⭐ 배열 그대로 넣기
+                setBooks(res.data.data ?? []);
             } catch (error) {
                 console.error("Failed to fetch my books:", error);
                 alert(
@@ -44,6 +44,7 @@ export default function BookList() {
 
     return (
         <Box>
+            {/*헤더 표시항목 파라미터*/}
             <Header
                 title="마이페이지"
                 showButton={true}
@@ -64,7 +65,7 @@ export default function BookList() {
                         내가 등록한 도서
                     </Typography>
                 </Box>
-
+                {/* 도서 목록 그리드 화면 사이즈 별로 카드 리스트 갯수가 달라짐 참고용*/}
                 <Box
                     sx={{
                         display: "grid",
