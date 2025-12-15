@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
+import {baseUrl} from "../config/constants.js";
 
 /**
  * 도서 등록/수정 페이지
@@ -163,8 +164,9 @@ export default function BookReg() {
 
         try {
             if (isEditMode) {
+                // 수정 커스텀 api 사용시 동작 안해서 확인 필요
                 await axios.put(
-                    `http://localhost:8080/api/v1/books/${id}`,
+                    baseUrl + `/books/${id}`,
                     book,
                     {
                         headers: {
@@ -184,7 +186,7 @@ export default function BookReg() {
                 //     { headers: { "Content-Type": "application/json" } }
                 // );
                 await api.post(
-                    "/books",    // baseURL이 이미 http://localhost:8080/api/v1 라고 가정
+                    "/books",
                     book
                 );
                 alert("도서 등록 성공!");
