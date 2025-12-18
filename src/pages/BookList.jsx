@@ -2,12 +2,17 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Typography, Box, Container } from "@mui/material";
-import BookCard from "../components/BookCard";
-import Pagination from "../components/Pagination";
-import Header from "../components/Header";
-import SortButton from "../components/SortButton";
-import api from "../api";
+import BookCard from "../components/BookCard.jsx";
+import Pagination from "../components/Pagination.jsx";
+import Header from "../components/Header.jsx";
+import SortButton from "../components/SortButton.jsx";
+import api from "../config/api.js";
 
+/**
+ * 도서 목록 페이지 (메인)
+ * - 전체 도서 목록을 카드 형태로 보여줍니다.
+ * - 페이지네이션, 정렬(최신/인기순) 기능을 포함합니다.
+ */
 export default function BookList() {
     const navigate = useNavigate();
     const [page, setPage] = useState(1);
@@ -15,14 +20,15 @@ export default function BookList() {
     const [books, setBooks] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
 
+    // 도서 목록 조회 (정렬 및 페이지 필터 적용)
     useEffect(() => {
         const fetchBooks = async () => {
             try {
                 const response = await api.get("/books", {
                     params: {
-                        sort: sortOrder,
-                        page: page - 1,
-                        size: 15,
+                        sort: sortOrder, // 정렬 기준
+                        page: page - 1,  // 페이지 (0부터 시작)
+                        size: 15,        // 한 페이지당 항목 수
                     },
                 });
 
@@ -45,12 +51,13 @@ export default function BookList() {
         fetchBooks();
     }, [sortOrder, page]);
 
+    //정렬
     const handleSortChange = (order) => {
         setSortOrder(order);
         setPage(1);
     };
 
-    // 🔥 헤더에 넘겨줄 로그아웃 함수
+    //헤더에 넘겨줄 로그아웃 함수
     const handleLogout = () => {
         sessionStorage.removeItem("accessToken");
         alert("로그아웃 되었습니다.");
@@ -70,8 +77,9 @@ export default function BookList() {
             <Header
                 title="모두의 서재"
                 showButton={true}
-                showLogout={true}      // 🔥 로그아웃 버튼 보이기
-                onLogout={handleLogout} // 🔥 클릭 시 실행
+                showLogout={true}
+                showMyPage={true}
+                onLogout={handleLogout}
             />
 
             <Container component="main" maxWidth="lg">
@@ -92,6 +100,7 @@ export default function BookList() {
                     />
                 </Box>
 
+                {/* 도서 목록 그리드 화면 사이즈 별로 카드 리스트 갯수가 달라짐 참고용*/}
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 5 }}>
                     {bookRows.map((row, rowIndex) => (
                         <Box
@@ -118,6 +127,7 @@ export default function BookList() {
                                         coverImageUrl: book.coverImageUrl,
                                         createdAt: book.bookCreated,
                                         category: book.category,
+                                        nickname: book.user.nickname,
                                     }}
                                     onClick={() =>
                                         navigate(`/detail/${book.bookId}`, {

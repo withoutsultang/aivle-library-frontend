@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import {
     Box,
@@ -11,8 +11,7 @@ import {
     IconButton,
     Select,
     MenuItem,
-    FormControl,
-    CircularProgress
+    FormControl
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useLocation, useParams, useNavigate  } from "react-router-dom";
@@ -36,8 +35,6 @@ export default function BookReg() {
 
     const [open, setOpen] = useState(false);
     const [apiKey, setApiKey] = useState("");
-
-    const [loading, setLoading] = useState(false);
 
     // 모델 + 해상도 선택
     const [selectedModel, setSelectedModel] = useState("1024x1792");
@@ -83,12 +80,19 @@ export default function BookReg() {
             return;
         }
 
-        setLoading(true);
-
         const size = resolutionMap[selectedModel];
 
+        // 따옴표 안의 핵심 단어 추출
+        const extractKeyword = (text) => {
+            if (!text) return '';
+            const match = text.match(/['']([^'']+)['']/);
+            return match ? match[1] : text.substring(0, 40);
+        };
+
+        const mainSubject = extractKeyword(book.description);
+
         const prompt = `Book cover design in modern flat illustration style.
-            Main subject: ${book.description}.
+            Main subject: ${mainSubject}.
             Genre: ${book.category}.
             Visual style: minimalist geometric composition, symbolic cultural elements, sophisticated color harmony.
             Design quality: professional bookstore standard, clear title space.
@@ -128,8 +132,6 @@ export default function BookReg() {
         } catch (error) {
             console.error("이미지 생성 오류:", error);
             alert("이미지 생성 중 문제가 발생했습니다.");
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -226,24 +228,9 @@ export default function BookReg() {
                         </Select>
                     </FormControl>
 
-                    {/* ⭐ 버튼 로딩 처리 */}
-                    <Button
-                        variant="contained"
-                        fullWidth
-                        sx={{ mb: 3 }}
-                        onClick={generateImage}
-                        disabled={loading}
-                    >
-                        {loading ? "이미지 생성 중..." : "AI 표지 1장 생성"}
+                    <Button variant="contained" fullWidth sx={{ mb: 3 }} onClick={generateImage}>
+                        AI 표지 1장 생성
                     </Button>
-
-                    {/* ⭐ 로딩 스피너 표시 */}
-                    {loading && (
-                        <Box sx={{ textAlign: "center", mb: 2 }}>
-                            <CircularProgress />
-                            <Typography sx={{ mt: 1 }}>AI가 이미지를 생성하고 있습니다...</Typography>
-                        </Box>
-                    )}
 
                     {images.length > 0 && (
                         <Box sx={{

@@ -1,112 +1,154 @@
 import './App.css'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
-import { baseUrl } from "./config/constants.jsx";
 
 import BookList from "./pages/BookList";
 import BookDetail from "./pages/BookDetail";
 import BookReg from "./pages/BookReg";
 import BookBody from "./pages/BookBody";
 import LoginPage from "./pages/LoginPage";
+import MyPage from "./pages/MyPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+/**
+ * AuthHandler 컴포넌트
+ * - OAuth 로그인 리다이렉트 처리 컴포넌트입니다.
+ * - 백엔드에서 전달된 토큰을 파싱하여 세션 스토리지에 저장하고,
+ * - 로그인 상태를 업데이트한 후 메인 페이지로 이동합니다.
+ */
+
+import api from "./config/api.js";
+import { useUser } from "./store/UserContext";
+
+//로그인
 function AuthHandler({ setIsLoggedIn }) {
     const navigate = useNavigate();
     const processed = useRef(false);
 
+    const { setUser } = useUser();
+
     useEffect(() => {
+        //한번 실행시 재진입 방지
         if (processed.current) return;
         processed.current = true;
 
-        const hash = window.location.hash.substring(1);
-        const params = new URLSearchParams(hash);
-        const code = params.get("code");
-        const state = params.get("state");
-        const accessToken = params.get("access_token");
+        //URL에서 토큰 파싱
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get("token");
 
-        console.log("AuthHandler params:", { code, state, accessToken });
+        //로그인 성공
+        const handleLoginSuccess = async (token) => {
+            try {
+                //토큰 세션스토리지에 저장
+                sessionStorage.setItem("accessToken", token);
+                setIsLoggedIn(true);
 
-        const handleLoginSuccess = (token) => {
-            sessionStorage.setItem("accessToken", token);
-            setIsLoggedIn(true);
-            navigate("/booklist", { replace: true });
+                //사용자 정보 조회 및 저장
+                const res = await api.get("/me");
+                setUser(res.data.data); //
+
+                //메인 페이지로 이동
+                navigate("/booklist", { replace: true });
+            } catch (e) {
+                console.error("me 호출 실패:", e);
+                sessionStorage.removeItem("accessToken");
+                alert("로그인 처리 중 오류가 발생했습니다.");
+                navigate("/login", { replace: true });
+            }
         };
 
-        const handleLoginFailure = (error) => {
-            console.error("Login failed:", error);
-            alert("로그인에 실패했습니다. 다시 시도해주세요.");
-            navigate("/login", { replace: true });
-        };
-
-        if (accessToken) {
-            handleLoginSuccess(accessToken);
-            return;
-        }
-
-        if (code && state) {
-            axios.get(`${baseUrl}/auth/naver/callback`, { params: { code, state } })
-                .then(res => {
-                    const { accessToken } = res.data.data;
-                    if (accessToken) {
-                        handleLoginSuccess(accessToken);
-                    } else {
-                        handleLoginFailure("Access token not found in response.");
-                    }
-                })
-                .catch(err => {
-                    console.error("Error during login:", err);
-                    handleLoginFailure(err);
-                });
-        } else {
-            handleLoginFailure("Missing code or state.");
-        }
-    }, []);
+        //토큰이 있으면 handleLoginSuccess() 실행
+        if (token) handleLoginSuccess(token);
+        //없으면 로그인 페이지로 이동
+        else navigate("/login", { replace: true });
+    }, [navigate, setIsLoggedIn, setUser]);
 
     return <div>로그인 처리 중...</div>;
 }
 
+
+
+/**
+ * App 컴포넌트
+ * - 애플리케이션의 메인 진입점입니다.
+ * - 라우팅 설정 및 전역 로그인 상태 관리를 담당합니다.
+ */
+
 function App() {
-    // 🔥 로그인 상태 체크 sessionStorage로 변경
     const [isLoggedIn, setIsLoggedIn] = useState(() => !!sessionStorage.getItem("accessToken"));
+    const { user, setUser, clearUser } = useUser();
+
+    useEffect(() => {
+        //세션스토리지에 저장된 토큰 가져오기
+        const token = sessionStorage.getItem("accessToken");
+        if (!token || user) return;
+
+        //유저 정보 가져오기
+        async function fetchUser() {
+            try {
+                const res = await api.get("/me");
+                setUser(res.data.data);
+            } catch (e) {
+                sessionStorage.removeItem("accessToken");
+                clearUser();
+                setIsLoggedIn(false);
+            }
+        }
+
+        fetchUser();
+    }, [user, setUser, clearUser]);
 
     return (
         <BrowserRouter>
             <Routes>
+                {/* 기본 경로: 로그인 상태에 따라 리다이렉트 */}
                 <Route path="/" element={<Navigate to={isLoggedIn ? "/booklist" : "/login"} replace />} />
+                {/* 로그인 페이지 */}
                 <Route path="/login" element={<LoginPage />} />
 
+                {/* OAuth 성공 핸들러 경로 */}
                 <Route
-                    path="/api/v1/auth/naver/callback"
+                    path="/oauth/success"
                     element={<AuthHandler setIsLoggedIn={setIsLoggedIn} />}
                 />
 
+                {/* 보호된 라우트: 로그인한 사용자만 접근 가능 */}
+                {/* 도서 목록 페이지 */}
                 <Route path="/booklist" element={
                     <ProtectedRoute isLoggedIn={isLoggedIn}>
                         <BookList />
                     </ProtectedRoute>
                 } />
+                {/* 도서 상세 페이지 */}
                 <Route path="/detail/:id" element={
                     <ProtectedRoute isLoggedIn={isLoggedIn}>
                         <BookDetail />
                     </ProtectedRoute>
                 } />
+                {/* 도서 등록 페이지 */}
                 <Route path="/bookreg" element={
                     <ProtectedRoute isLoggedIn={isLoggedIn}>
                         <BookReg />
                     </ProtectedRoute>
                 } />
+                {/* 도서 수정 페이지 (등록과 같은 페이지 활용) */}
                 <Route path="/bookreg/:id" element={
                     <ProtectedRoute isLoggedIn={isLoggedIn}>
                         <BookReg />
                     </ProtectedRoute>
                 } />
+                {/* 도서 본문 페이지 */}
                 <Route path="/body" element={
                     <ProtectedRoute isLoggedIn={isLoggedIn}>
                         <BookBody />
                     </ProtectedRoute>
                 } />
-
+                {/* 마이 페이지 */}
+                <Route path="/mypage" element={
+                    <ProtectedRoute isLoggedIn={isLoggedIn}>
+                        <MyPage />
+                    </ProtectedRoute>
+                } />
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </BrowserRouter>

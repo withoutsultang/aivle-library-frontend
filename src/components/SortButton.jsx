@@ -2,8 +2,11 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Menu, MenuItem } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { COLORS } from '../config/constants';
+import { COLORS } from '../config/constants.js';
 
+/**
+ * 정렬 옵션 정의
+ */
 const SORT_OPTIONS = {
     LATEST: '최신순',
     POPULAR: '인기순',
@@ -11,6 +14,13 @@ const SORT_OPTIONS = {
     TITLE_DESC: '내림차순',
 };
 
+/**
+ * 정렬 버튼 컴포넌트
+ * - 드롭다운 메뉴를 통해 정렬 방식을 선택할 수 있습니다.
+ * @param {string} sortOrder - 현재 정렬 상태 (키 값)
+ * @param {Function} onSortChange - 정렬 변경 시 호출되는 핸들러
+ * 선택시 리스트 페이지에 정렬 기준을 알려주고 리스트에서 호출
+ */
 export default function SortButton({ sortOrder, onSortChange }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -41,6 +51,7 @@ export default function SortButton({ sortOrder, onSortChange }) {
             >
                 {SORT_OPTIONS[sortOrder]}
             </Button>
+            {/* 정렬 옵션 메뉴 */}
             <Menu
                 id="sort-menu"
                 anchorEl={anchorEl}

@@ -7,24 +7,39 @@ import {
     Divider,
 } from "@mui/material";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { COLORS } from "../config/constants";
+import { COLORS } from "../config/constants.js";
 import { useEffect, useState } from "react";
-import api from "../api";
+import api from "../config/api.js";
+import { useUser } from "../store/UserContext.jsx";
+import BookCover from "../components/BookCover";
 
+
+/**
+ * 도서 상세 페이지
+ * - 도서의 상세 정보(제목, 저자, 내용 등)를 조회하고 표시합니다.
+ * - 본문 읽기, 수정, 삭제 기능을 제공합니다.
+ */
 export default function BookDetail() {
     const navigate = useNavigate();
     const { id } = useParams();
     const location = useLocation();
-
     const [book, setBook] = useState(location.state || null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const { user } = useUser();
+
+    //글 작성자인지 확인 하기
+    const isOwner =
+        !!user?.nickname &&
+        !!book?.user?.nickname &&
+        user.nickname === book.user.nickname;
+
+    // 도서 삭제 핸들러
     const handleDelete = async () => {
         if (!window.confirm("정말로 이 책을 삭제하시겠습니까?")) return;
 
         try {
-            // 🔥 baseUrl + axios → api로 변경
             await api.delete(`/books/${id}`);
             alert("도서가 삭제되었습니다.");
             navigate("/");
@@ -45,7 +60,7 @@ export default function BookDetail() {
             try {
                 setLoading(true);
 
-                // 🔥 axios + baseUrl → api로 변경
+                // 상세 정보와 기본 정보를 한번에 요청해서 병합, API 데이터를 수정하는 것도 고려 해야할듯
                 const [detailRes, infoRes] = await Promise.all([
                     api.get(`/books/${id}/detail`),
                     api.get(`/books/${id}`),
@@ -54,6 +69,7 @@ export default function BookDetail() {
                 const detailData = detailRes.data?.data || {};
                 const infoData = infoRes.data?.data || {};
 
+                // 위에서 받아온 데이터로 도서 정보 업데이트
                 setBook({
                     ...(location.state || {}),
                     ...infoData,
@@ -137,46 +153,49 @@ export default function BookDetail() {
                         overflow: "visible",
                     }}
                 >
-                    <Box
-                        sx={{
-                            position: "absolute",
-                            top: 16,
-                            right: 16,
-                            display: "flex",
-                            gap: 1,
-                        }}
-                    >
-                        <Button
-                            color="inherit"
-                            onClick={() =>
-                                navigate(`/bookreg/${book.bookId}`, {
-                                    state: { book },
-                                })
-                            }
+                    {isOwner && (
+                        <Box
                             sx={{
-                                borderColor: COLORS.BORDER_BEIGE,
-                                color: COLORS.TEXT_BROWN,
-                                textTransform: "none",
-                                "&:hover": {
-                                    borderColor: COLORS.BORDER_BEIGE_HOVER,
-                                },
+                                position: "absolute",
+                                top: 16,
+                                right: 16,
+                                display: "flex",
+                                gap: 1,
                             }}
                         >
-                            ✎ 수정
-                        </Button>
-                        <Button
-                            color="error"
-                            onClick={handleDelete}
-                            sx={{ textTransform: "none" }}
-                        >
-                            삭제
-                        </Button>
-                    </Box>
+                            <Button
+                                color="inherit"
+                                onClick={() =>
+                                    navigate(`/bookreg/${book.bookId}`, {
+                                        state: { book },
+                                    })
+                                }
+                                sx={{
+                                    borderColor: COLORS.BORDER_BEIGE,
+                                    color: COLORS.TEXT_BROWN,
+                                    textTransform: "none",
+                                    "&:hover": {
+                                        borderColor: COLORS.BORDER_BEIGE_HOVER,
+                                    },
+                                }}
+                            >
+                                ✎ 수정
+                            </Button>
+
+                            <Button
+                                color="error"
+                                onClick={handleDelete}
+                                sx={{ textTransform: "none" }}
+                            >
+                                삭제
+                            </Button>
+                        </Box>
+                    )}
+
 
                     <Box display="flex" gap={6} alignItems="flex-start">
                         <Box minWidth={260}>
-                            <Box
-                                component="img"
+                            <BookCover
                                 src={coverImageUrl}
                                 alt={book.title}
                                 sx={{
@@ -289,7 +308,7 @@ export default function BookDetail() {
                                         borderRadius: 1,
                                         "&:hover": {
                                             backgroundColor:
-                                            COLORS.BTN_BEIGE_HOVER,
+                                                COLORS.BTN_BEIGE_HOVER,
                                         },
                                     }}
                                 >

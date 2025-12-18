@@ -1,29 +1,31 @@
-import {Box,Typography,Button,Paper,Avatar,Container} from '@mui/material';
+import { Box, Typography, Button, Paper, Avatar, Container } from '@mui/material';
 import { MenuBook } from '@mui/icons-material';
+import { useState } from 'react';
+import {baseUrl} from "../config/constants.js";
+import axios from 'axios';
 
+/**
+ * 로그인 페이지
+ * - 네이버 OAuth 로그인을 시작하는 진입점입니다.
+ * - 백엔드로부터 로그인 URL을 받아 리다이렉트합니다.
+ */
 export default function LoginPage() {
-    const clientId = import.meta.env.VITE_NAVER_CLIENT_ID;
-    const callbackUrl = import.meta.env.VITE_NAVER_CALLBACK_URL;
+    const [loading, setLoading] = useState(false);
 
-    const handleNaverLogin = () => {
-        const naverLogin = new window.naver.LoginWithNaverId({
-            clientId: clientId, // 네이버 클라이언트 ID
-            callbackUrl: callbackUrl, // 콜백 URL
-            isPopup: false, // 팝업 여부
-            loginButton: { color: "green", type: 3, height: 60 },
-        });
-        naverLogin.init();
+    // 네이버 로그인 핸들러
+    const handleNaverLogin = async () => {
+        try {
+            setLoading(true);
+            // 백엔드에서 네이버 로그인 인증 URL 요청
+            const response = await axios.get(`${baseUrl}/auth/naver/login-url`);
+            const { loginUrl } = response.data.data;
 
-
-        const naverLoginButton = document.getElementById("naverIdLogin").firstChild;
-        if (naverLoginButton) {
-            naverLoginButton.click();
-        } else {
-            naverLogin.getLoginStatus((status) => {
-                if (!status) {
-                    console.error("Naver login button not found.");
-                }
-            });
+            // 해당 URL로 이동 (네이버 로그인 페이지)
+            window.location.href = loginUrl;
+        } catch (error) {
+            console.error('Failed to get Naver login URL:', error);
+            alert('로그인 URL을 가져오는데 실패했습니다.');
+            setLoading(false);
         }
     };
 
@@ -68,8 +70,9 @@ export default function LoginPage() {
                     <Button
                         variant="contained"
                         onClick={handleNaverLogin}
+                        disabled={loading}
                         sx={{
-                            backgroundColor: '#03C75A', // 네이버 그린
+                            backgroundColor: '#03C75A',
                             '&:hover': {
                                 backgroundColor: '#02b351',
                             },
@@ -78,11 +81,14 @@ export default function LoginPage() {
                             fontWeight: 'bold'
                         }}
                     >
-                        네이버 아이디로 로그인
+                        {loading ? (
+                            <CircularProgress size={24} sx={{ color: 'white' }} />
+                        ) : (
+                            '네이버 아이디로 로그인'
+                        )}
                     </Button>
                 </Paper>
             </Container>
         </Box>
     );
 }
-
