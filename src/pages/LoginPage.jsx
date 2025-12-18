@@ -63,7 +63,7 @@ export default function LoginPage() {
                             모두의 서재
                         </Typography>
                         <Typography sx={{ margin: '8px 0 0 0', color: '#6D4C41' }}>
-                            로그인이 필요합니다.
+                            로그인이 필요합니다.(2.0)
                         </Typography>
                     </Box>
 
