@@ -1,12 +1,12 @@
 import axios from "axios";
-import { baseUrl } from "./constants";
+import {baseUrl} from "./constants.js";
 
 /**
    api 요청시 사용
  */
-
 const api = axios.create({
     baseURL: baseUrl,
+    withCredentials: false,
 });
 
 // 요청에 토큰 추가

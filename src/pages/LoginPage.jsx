@@ -1,4 +1,4 @@
-import { Box, Typography, Button, Paper, Avatar, Container } from '@mui/material';
+import { Box, Typography, Button, Paper, Avatar, Container, CircularProgress } from '@mui/material';
 import { MenuBook } from '@mui/icons-material';
 import { useState } from 'react';
 import {baseUrl} from "../config/constants.js";
@@ -60,7 +60,7 @@ export default function LoginPage() {
                             <MenuBook sx={{ fontSize: 32 }} />
                         </Avatar>
                         <Typography component="h1" variant="h4" sx={{ margin: 0, color: '#3E2723', fontWeight: 'bold' }}>
-                            모두의 서재
+                            모두의 서재(2.3)
                         </Typography>
                         <Typography sx={{ margin: '8px 0 0 0', color: '#6D4C41' }}>
                             로그인이 필요합니다.
