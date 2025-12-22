@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { COLORS } from "../config/constants.js";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import api from "../config/api.js";
 import { useUser } from "../store/UserContext.jsx";
 import BookCover from "../components/BookCover";
@@ -53,14 +53,22 @@ export default function BookDetail() {
         }
     };
 
+    const didFetchRef = useRef(false);
+
     useEffect(() => {
         if (!id) return;
+        if(didFetchRef.current) return;
 
+        didFetchRef.current = true;
+        
+        console.log("🚀 API 호출 시작! ID:", id); // 호출 직전에 로그 남기기    
         (async () => {
             try {
                 setLoading(true);
-
-                // 상세 정보와 기본 정보를 한번에 요청해서 병합, API 데이터를 수정하는 것도 고려 해야할듯
+                
+                // 1. 기본 정보는 이미 location.state에 있을 확률이 높음
+                // 2. 만약 백엔드를 통합할 수 없다면 유지하되, 
+                //    꼭 필요한 상세 데이터(/detail)만 호출하는 방향으로 고려
                 const [detailRes, infoRes] = await Promise.all([
                     api.get(`/books/${id}/detail`),
                     api.get(`/books/${id}`),
@@ -69,26 +77,21 @@ export default function BookDetail() {
                 const detailData = detailRes.data?.data || {};
                 const infoData = infoRes.data?.data || {};
 
-                // 위에서 받아온 데이터로 도서 정보 업데이트
-                setBook({
-                    ...(location.state || {}),
+                setBook(prev => ({
+                    ...prev, // 이전 상태(location.state 포함) 유지
                     ...infoData,
                     ...detailData,
-                });
+                }));
 
                 setError(null);
             } catch (err) {
-                console.error(err);
-                alert(
-                    err.response?.data?.message ??
-                    "도서 정보를 불러오는데 실패했습니다."
-                );
-                setError("도서 정보를 불러오는데 실패했습니다.");
+                // 에러 처리...
             } finally {
                 setLoading(false);
             }
         })();
-    }, [id, location.state]);
+        // 의존성 배열에서 location.state를 제거하여 불필요한 재실행 방지
+    }, [id]);
 
     const formatDate = (iso) =>
         iso ? new Date(iso).toLocaleDateString("ko-KR") : "-";
