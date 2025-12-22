@@ -3,11 +3,9 @@ phases:
   install:
     runtime-versions:
       nodejs: 20
-    commands:
-      - npm install -g @angular/cli@17
   pre_build:
     commands:
-      - npm install
+      - npm ci
   build:
     commands:
-      - ng test --no-watch --no-progress --browsers=ChromeHeadlessCI
+      - npm test -- --watch=false
