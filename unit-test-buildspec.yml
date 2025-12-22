@@ -3,6 +3,8 @@ phases:
   install:
     runtime-versions:
       nodejs: 20
+    commands:
+      npm install -g vitest
   pre_build:
     commands:
       - npm ci
