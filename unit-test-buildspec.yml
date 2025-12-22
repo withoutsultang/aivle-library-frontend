@@ -3,11 +3,11 @@ phases:
   install:
     runtime-versions:
       nodejs: 20
-    commands:
-      npm install -g vitest
   pre_build:
     commands:
-      - npm ci
+      # package.json에 명시된 모든 패키지(vitest 포함)를 설치합니다.
+      - npm ci 
   build:
     commands:
-      - npm test -- --watch=false
+      # 프로젝트 내부의 vitest를 실행합니다.
+      - npm test
