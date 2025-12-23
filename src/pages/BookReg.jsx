@@ -122,21 +122,24 @@ export default function BookReg() {
                     "Authorization": `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
-                    model: "dall-e-3", // DALL·E 3 API 공식 모델명
+                    model: "gpt-image-1.5", // DALL·E 3 API 공식 모델명
                     prompt,
-                    size,
+                    size:"1024x1536",
                     n: 1
                 })
             });
 
             const data = await response.json();
 
-            if (!data.data || !data.data[0]?.url) {
-                alert("이미지 생성 실패");
+            const b64 = data?.data?.[0]?.b64_json;
+            if (!b64) {
+                console.log(data);
+                alert("이미지 생성 실패 (b64_json 없음)");
                 return;
             }
 
-            const newUrl = data.data[0].url;
+            // output_format 기본이 png라서 image/png로 두면 됨
+            const newUrl = `data:image/png;base64,${b64}`;
 
             setImages(prev => {
                 const updated = [...prev, newUrl];
