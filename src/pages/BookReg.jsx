@@ -162,36 +162,39 @@ export default function BookReg() {
             return;
         }
 
-        // 서버 전송용 데이터 정리 (userId 등 불필요 필드 제외 가능)
-        const requestData = {
-            title: book.title,
-            category: book.category,
-            description: book.description,
-            content: book.content,
-            coverImageUrl: book.coverImageUrl // OpenAI 임시 URL 또는 기존 S3 Key
-        };
-
         try {
             if (isEditMode) {
-                // 수정 모드: PUT /api/v1/books/{id}
-                // api 인스턴스가 baseURL과 Auth 헤더를 처리한다고 가정합니다.
-                await api.put(`/books/${id}`, requestData);
-                
+                // 수정 커스텀 api 사용시 동작 안해서 확인 필요
+                await axios.put(
+                    baseUrl + `/books/${id}`,
+                    book,
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${sessionStorage.getItem("accessToken")}`
+                        }
+                    }
+                );
+
                 alert("도서 수정 완료!");
                 navigate(`/bookdetail/${id}`);
             } else {
-                // 등록 모드: POST /api/v1/books
-                const response = await api.post("/books", requestData);
-                
+                // 등록 모드: POST 요청
+                // await axios.post(
+                //     "http://localhost:8080/api/v1/books",
+                //     book,
+                //     { headers: { "Content-Type": "application/json" } }
+                // );
+                await api.post(
+                    "/books",
+                    book
+                );
                 alert("도서 등록 성공!");
-                // 백엔드에서 생성된 ID를 받아 상세페이지로 바로 이동하는 것이 사용자 경험에 좋습니다.
-                const newBookId = response.data.data.bookId; 
-                navigate(`/bookdetail/${newBookId}`);
+                navigate('/booklist');
             }
         } catch (error) {
-            console.error("저장 오류:", error);
-            const errorMessage = error.response?.data?.message || "문제가 발생했습니다.";
-            alert(`${isEditMode ? "수정" : "등록"} 실패: ${errorMessage}`);
+            console.error(error);
+            alert(isEditMode ? "도서 수정 실패!" : "도서 등록 실패!");
         }
     };
 

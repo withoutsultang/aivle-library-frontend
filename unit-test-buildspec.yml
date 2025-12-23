@@ -10,4 +10,4 @@ phases:
   build:
     commands:
       # 프로젝트 내부의 vitest를 실행합니다.
-      - npm test -- --run --reporter=verbose
+      - npm test
