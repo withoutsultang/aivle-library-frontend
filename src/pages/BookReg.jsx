@@ -47,16 +47,17 @@ export default function BookReg() {
     const [loading, setLoading] = useState(false);
 
     // 모델 + 해상도 선택
-    const [selectedModel, setSelectedModel] = useState("1024x1792");
+    const [selectedModel, setSelectedModel] = useState("1024x1536");
 
     // 이미지 목록(최대 3개 유지)
     const [images, setImages] = useState([]);
 
     // 해상도 매핑 (DALL·E 3용)
     const resolutionMap = {
-        "1024x1792": "1024x1792", // 세로형
-        "1024x1024": "1024x1024", // 정사각형
-        "1792x1024": "1792x1024", // 가로형
+        "1024x1536": "1024x1536", // 세로형(책표지 추천)
+        "1024x1024": "1024x1024",
+        "1536x1024": "1536x1024", // 가로형
+        "auto": "auto",
     };
 
     // 입력 변경
@@ -124,12 +125,18 @@ export default function BookReg() {
                 body: JSON.stringify({
                     model: "gpt-image-1.5", // DALL·E 3 API 공식 모델명
                     prompt,
-                    size:"1024x1536",
+                    size,
                     n: 1
                 })
             });
 
             const data = await response.json();
+
+            if (!response.ok) {
+                console.log("OpenAI error response:", data);
+                alert(data?.error?.message ?? `이미지 생성 실패 (HTTP ${response.status})`);
+                return;
+            }
 
             const b64 = data?.data?.[0]?.b64_json;
             if (!b64) {
@@ -249,10 +256,11 @@ export default function BookReg() {
                     </Typography>
 
                     <FormControl fullWidth sx={{ mb: 3 }}>
-                        <Select value={selectedModel} onChange={handleModelChange}>
-                            <MenuItem value="1024x1792">📖 세로형 (1024×1792) - 책 표지 추천</MenuItem>
+                        <Select value={selectedSize} onChange={(e)=>setSelectedModel(e.target.value)}>
+                            <MenuItem value="1024x1536">📖 세로형 (1024×1536) - 책 표지 추천</MenuItem>
                             <MenuItem value="1024x1024">⬛ 정사각형 (1024×1024)</MenuItem>
-                            <MenuItem value="1792x1024">🖼️ 가로형 (1792×1024)</MenuItem>
+                            <MenuItem value="1536x1024">🖼️ 가로형 (1536×1024)</MenuItem>
+                            <MenuItem value="auto">⚡ 자동 (auto)</MenuItem>
                         </Select>
                     </FormControl>
 
