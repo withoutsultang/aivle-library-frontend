@@ -26,3 +26,8 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Local credentials
+.env
+.env.*
+!.env.example
