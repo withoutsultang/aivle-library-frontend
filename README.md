@@ -1,37 +1,80 @@
-# 모두의 서재 — Frontend
+# 📚 모두의 서재 · Frontend
 
-포트폴리오 정리자: **김건우 ([withoutsultang](https://github.com/withoutsultang))**
+> 글을 쓰고, 표지를 고르고, 나의 도서를 공개하는 창작 공간
 
-글을 집필하고 도서 형태로 공개하는 창작 플랫폼의 프론트엔드입니다. **KT AIVLE 팀 프로젝트**의 결과물을 개인 포트폴리오 검토용 독립 저장소로 정리했습니다. 화면과 기능 전체를 개인 단독 성과로 표현하지 않습니다.
+작품을 카드 형태로 탐색하고, 본문을 읽거나 직접 도서를 작성할 수 있는 React 웹 애플리케이션입니다. 도서 작성 화면에 AI 표지 생성·선택 기능을 연결해 창작 과정에서 필요한 작업을 한곳에 모았습니다.
 
-- 원본: [KT-AIVLE-School-4th-Mini-Project/FrontEnd](https://github.com/KT-AIVLE-School-4th-Mini-Project/FrontEnd)
-- 백엔드: [aivle-library-backend](https://github.com/withoutsultang/aivle-library-backend)
-- 기준 브랜치: `dev`
+**KT AIVLE 팀 프로젝트 · 개발 참여: 김건우 ([withoutsultang](https://github.com/withoutsultang))**
 
-## 목적과 기능
+[Backend 저장소](https://github.com/withoutsultang/aivle-library-backend) · [원본 팀 저장소](https://github.com/KT-AIVLE-School-4th-Mini-Project/FrontEnd)
 
-도서 목록·상세·본문 읽기·등록·수정, 관심 도서와 마이페이지, 네이버 로그인 연결을 제공합니다. 도서 등록 화면에는 설명을 바탕으로 표지를 생성하고 선택하는 UI가 있습니다. 외부 서비스의 현재 지원 여부나 실동작을 이번 작업에서 확인한 것은 아닙니다.
+## 서비스 이용 흐름
+
+```text
+네이버 로그인 → 도서 목록 탐색 → 상세 정보·본문 읽기
+                         ├─ 관심 도서 추가 → 마이페이지
+                         └─ 도서 작성 → AI 표지 생성·선택 → 등록
+```
+
+## 주요 화면
+
+| 화면 | 기능 |
+| --- | --- |
+| 도서 목록 | 카드형 도서 목록, 정렬, 페이지 이동 |
+| 도서 상세·본문 | 작품 정보 확인, 본문 읽기, 수정·삭제 진입 |
+| 도서 작성 | 제목·분류·소개·본문 입력, 표지 이미지 선택, 등록·수정 |
+| AI 표지 생성 | 작품 설명에 따른 표지 생성 요청과 이미지 선택 |
+| 마이페이지 | 작성한 도서와 관심 도서 확인 |
+| 로그인 | 네이버 로그인 연결과 인증 후 화면 이동 |
+
+화면과 서비스 기능은 팀이 함께 구현했습니다. 김건우의 프론트엔드 참여 범위는 아래 연동·설정 작업입니다.
+
+## 담당 역할
+
+- **API 연결 환경 조정:** Vite 개발 서버의 프록시와 백엔드 연결 설정을 수정했습니다.
+- **표지 생성 옵션 검토:** 이미지 생성 모델과 해상도 옵션을 비교하고 적용·복원하며 표지 생성 요청 설정을 조정했습니다.
+
+백엔드에서 맡은 도서 API·검증·연동 설정 작업은 [Backend 포트폴리오](https://github.com/withoutsultang/aivle-library-backend)에서 확인할 수 있습니다. 프론트엔드의 구체적인 변경 이력은 [기여 내역](docs/CONTRIBUTIONS.md)에 정리했습니다.
 
 ## 기술 스택
 
-React 19, Vite 7, JavaScript, React Router 7, MUI 7, Emotion, Axios, Vitest·Testing Library, ESLint를 사용합니다. 정확한 설치 버전은 `package-lock.json`, 실행 명령은 `package.json`을 기준으로 합니다.
+| 영역 | 기술 |
+| --- | --- |
+| UI | React 19, JavaScript, MUI 7, Emotion |
+| 라우팅·상태 | React Router 7, Context API |
+| API 통신 | Axios, Fetch |
+| 개발·빌드 | Vite 7 |
+| 테스트 | Vitest, Testing Library |
 
-## 구조
+## 구현 구조
+
+- **공통 UI:** 도서 카드·표지·리더·페이지네이션을 컴포넌트로 분리했습니다.
+- **인증 흐름:** OAuth 응답의 토큰을 처리하고 사용자 정보를 조회하며, 보호된 페이지의 접근을 제어합니다.
+- **도서 작성 흐름:** 작성·수정 화면을 함께 사용하고 표지 생성 다이얼로그와 이미지 선택 상태를 관리합니다.
+- **API 연결:** API 클라이언트와 공통 경로를 별도 설정 파일에서 관리합니다.
+
+### 코드에서 살펴볼 부분
+
+- [BookReg](src/pages/BookReg.jsx): 도서 작성·수정과 AI 표지 생성·선택 흐름
+- [App](src/App.jsx): 페이지 라우팅과 OAuth 로그인 이후 처리
+- [API 클라이언트](src/config/api.js): 인증 토큰을 포함한 API 요청
+- [Vite 설정](vite.config.js): 로컬 API 프록시와 테스트 환경
+
+## 프로젝트 구조
 
 ```text
 src/
-  App.jsx             라우팅
-  pages/              BookList·BookDetail·BookBody·BookReg·LoginPage·MyPage
-  components/         도서 카드·표지·리더·헤더·페이지네이션·접근 제어
-  config/             API 클라이언트·상수
-  store/              사용자 컨텍스트
-  assets/             아이콘
-vite.config.js        로컬 API 프록시·테스트 설정
+├── pages/        목록·상세·본문·작성·로그인·마이페이지
+├── components/   도서 카드·표지·리더·헤더·페이지네이션
+├── config/       API 클라이언트·공통 상수
+├── store/        사용자 상태
+├── assets/       아이콘
+└── App.jsx       라우팅·인증 흐름
 ```
 
-## 실행
+## 실행 방법
 
-Node.js 22.12 이상을 기준으로 다음 명령을 사용합니다. 검증 환경은 Node.js 24.14.0입니다.
+Node.js 22.12 이상을 기준으로 합니다.
 
 ```sh
 git clone https://github.com/withoutsultang/aivle-library-frontend.git
@@ -41,29 +84,12 @@ npm ci --ignore-scripts
 npm run dev
 ```
 
-기본 브랜치의 프론트엔드는 `.env`를 요구하지 않습니다. API 기준 경로는 `/api/v1`이며 Vite 개발 서버가 이를 `http://localhost:8080`으로 전달합니다. 정상 API 기능에는 백엔드와 DB·OAuth·AWS 설정이 필요합니다.
+개발 서버는 `/api/v1` 요청을 `http://localhost:8080`으로 전달합니다. 로그인과 도서 API를 사용하려면 백엔드를 함께 실행해야 합니다. 표지 생성에는 별도 외부 API 설정이 필요합니다.
 
-```sh
-npm run build
-npm test
-npm run lint
-npm run preview
-```
+환경 설정, 빌드·테스트 명령과 현재 제약은 [실행 가이드](docs/RUNNING.md)에 정리했습니다.
 
-`preview`는 빌드 결과 확인용입니다. 개발 서버의 API 프록시가 배포 환경에도 자동으로 제공된다고 가정하면 안 됩니다. 운영 환경에는 `/api/v1` 연결과 SPA 라우팅 설정을 별도로 준비해야 합니다.
+## 관련 문서
 
-표지 생성 화면은 사용자가 입력한 API 키로 브라우저에서 외부 이미지 API를 직접 호출하는 원본 구현입니다. 키를 README·소스·스크린샷에 넣지 마세요. 이 경로는 유료 API를 사용할 수 있으며, 이번 검증에서는 호출하지 않았습니다. 공개 데모 제공 여부와 키 취급 방식은 별도 검토 항목입니다. 코드 기능은 변경하지 않았습니다.
-
-## 개인 기여의 근거
-
-원본의 `withoutsultang` 작성 커밋에는 프록시 설정 변경(`d29e94a`), 표지 생성 모델·크기 선택 관련 변경(`529ecdd`, `b1851e6`) 및 일부 변경을 되돌린 기록(`77ba70b`, `b20171d`)이 있습니다. 따라서 이 이력만으로 현재 화면 전체나 AI 표지 기능 전체를 개인 성과로 주장하지 않습니다. 이름과 계정은 본인이 확인했습니다. 구체적인 기여는 위 변경·되돌리기 이력을 기준으로 하며 확인되지 않은 정량 성과는 기재하지 않았습니다.
-
-## 검증과 공개 상태
-
-2026-10-27 기준 빌드 성공, 기존 테스트 3개 통과. 번들 크기 경고가 있으며 `lint`는 기존 오류 5개로 실패했습니다: `App.jsx`·`BookDetail.jsx`·테스트의 미사용 변수, `UserContext.jsx`의 Fast Refresh 내보내기 규칙입니다. 이 정리 작업에서는 기능 코드와 기존 오류를 수정하지 않았습니다.
-
-원본 브랜치 6개와 커밋 100개의 작성자·커미터·날짜·메시지·부모 순서를 보존했습니다. 과거 배포 서버 주소를 예시값으로 바꾸고 기록을 재작성하여 과거 파일 객체 2개와 커밋 해시 95개가 바뀌었습니다. 기존 커밋 서명 40개는 제거됐습니다. 대응표는 `docs/history-commit-map.tsv`에 있습니다. 원본 태그는 없습니다. 전체 Git 객체와 메타데이터에 대한 별도 패턴 검사 및 Gitleaks 검사를 수행했으며 고정 API 비밀키는 발견되지 않았습니다. 과거 로그인 코드에는 네이버 클라이언트 ID가 포함돼 있습니다. 이는 클라이언트 비밀키와 구분되는 식별자입니다. 외부 인증 앱 소유권·리디렉션 설정은 공개 전 확인 대상입니다.
-
-교육기관·팀 및 이미지·샘플 데이터·작성자 정보의 공개 허용 여부는 저장소 소유자의 확인을 근거로 기록했습니다. 원본에는 프로젝트 LICENSE가 없어 임의의 라이선스를 추가하지 않았습니다. 제3자 의존성과 외부 자료에는 각각의 조건이 적용됩니다.
-
-이 저장소는 비공개 검토본으로 준비됐으며 Public 전환에는 별도 검토·승인이 필요합니다. Issues, PR 대화·리뷰, Actions 실행 기록·비밀값·설정, 배포 리소스는 Git 기록 복사로 이전되지 않습니다. 로그인·도서 저장·관심 도서·유료 이미지 생성의 실서비스 통합 검증은 수행하지 않았습니다.
+- [개인 기여와 변경 이력](docs/CONTRIBUTIONS.md)
+- [환경 설정·실행·테스트](docs/RUNNING.md)
+- [제3자 자료와 의존성 고지](docs/THIRD_PARTY.md)
