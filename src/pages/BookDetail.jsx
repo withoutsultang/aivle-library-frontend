@@ -8,9 +8,9 @@ import {
 } from "@mui/material";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { COLORS } from "../config/constants.js";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../config/api.js";
-import { useUser } from "../store/UserContext.jsx";
+import { useUser } from "../store/useUser.js";
 import BookCover from "../components/BookCover";
 
 
@@ -31,9 +31,8 @@ export default function BookDetail() {
 
     //글 작성자인지 확인 하기
     const isOwner =
-        !!user?.nickname &&
-        !!book?.user?.nickname &&
-        user.nickname === book.user.nickname;
+        !!user?.userId &&
+        String(user.userId) === String(book?.user?.userId);
 
     // 도서 삭제 핸들러
     const handleDelete = async () => {
@@ -53,44 +52,27 @@ export default function BookDetail() {
         }
     };
 
-    const didFetchRef = useRef(false);
-
     useEffect(() => {
         if (!id) return;
-        if(didFetchRef.current) return;
-
-        didFetchRef.current = true;
-        
-        console.log("🚀 API 호출 시작! ID:", id); // 호출 직전에 로그 남기기    
+        const controller = new AbortController();
         (async () => {
             try {
                 setLoading(true);
-                
-                // 1. 기본 정보는 이미 location.state에 있을 확률이 높음
-                // 2. 만약 백엔드를 통합할 수 없다면 유지하되, 
-                //    꼭 필요한 상세 데이터(/detail)만 호출하는 방향으로 고려
-                const [detailRes, infoRes] = await Promise.all([
-                    api.get(`/books/${id}/detail`),
-                    api.get(`/books/${id}`),
+                const [detail, info] = await Promise.all([
+                    api.get(`/books/${id}/detail`, { signal: controller.signal }),
+                    api.get(`/books/${id}`, { signal: controller.signal }),
                 ]);
-
-                const detailData = detailRes.data?.data || {};
-                const infoData = infoRes.data?.data || {};
-
-                setBook(prev => ({
-                    ...prev, // 이전 상태(location.state 포함) 유지
-                    ...infoData,
-                    ...detailData,
-                }));
-
-                setError(null);
-            } catch (err) {
-                // 에러 처리...
+                if (!controller.signal.aborted) {
+                    setBook({ ...info.data.data, ...detail.data.data });
+                    setError(null);
+                }
+            } catch (error) {
+                if (!controller.signal.aborted) setError(error.response?.data?.message ?? "도서 정보를 불러오지 못했습니다.");
             } finally {
-                setLoading(false);
+                if (!controller.signal.aborted) setLoading(false);
             }
         })();
-        // 의존성 배열에서 location.state를 제거하여 불필요한 재실행 방지
+        return () => controller.abort();
     }, [id]);
 
     const formatDate = (iso) =>

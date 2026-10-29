@@ -1,95 +1,85 @@
-# 📚 모두의 서재 · Frontend
+![모두의 서재](docs/assets/banner.svg)
 
-> 글을 쓰고, 표지를 고르고, 나의 도서를 공개하는 창작 공간
+# 모두의 서재 · Frontend
 
-작품을 카드 형태로 탐색하고, 본문을 읽거나 직접 도서를 작성할 수 있는 React 웹 애플리케이션입니다. 도서 작성 화면에 AI 표지 생성·선택 기능을 연결해 창작 과정에서 필요한 작업을 한곳에 모았습니다.
+**글 작성 → AI 표지 선택 → 도서 공개를 연결하는 React 창작 플랫폼**
 
-**KT AIVLE 팀 프로젝트 · 개발 참여: 김건우 ([withoutsultang](https://github.com/withoutsultang))**
+독자는 카드형 목록에서 작품을 찾고 본문을 읽습니다. 작가는 원고와 소개를 작성하고 표지를 선택해 도서를 등록합니다.
+이 저장소는 KT AIVLE 팀 프로젝트를 바탕으로 김건우가 API 연결과 사용자 흐름을 발전시킨 개인 포트폴리오입니다.
 
-[Backend 저장소](https://github.com/withoutsultang/aivle-library-backend) · [원본 팀 저장소](https://github.com/KT-AIVLE-School-4th-Mini-Project/FrontEnd)
+[Backend](https://github.com/withoutsultang/aivle-library-backend) · [개인 기여](docs/CONTRIBUTIONS.md) · [화면 흐름](docs/ARCHITECTURE.md) · [실행](docs/RUNNING.md) · [검증](docs/VERIFICATION.md)
 
-## 서비스 이용 흐름
+## 사용자 흐름
 
-```text
-네이버 로그인 → 도서 목록 탐색 → 상세 정보·본문 읽기
-                         ├─ 관심 도서 추가 → 마이페이지
-                         └─ 도서 작성 → AI 표지 생성·선택 → 등록
+```mermaid
+flowchart LR
+    Login[네이버 로그인] --> List[도서 탐색·정렬]
+    List --> Detail[도서 상세]
+    Detail --> Reader[본문 읽기]
+    List --> Write[원고 작성]
+    Write --> Cover[AI 표지 생성·선택]
+    Cover --> Publish[도서 등록]
+    Detail --> Edit[작성자 도서 수정·삭제]
+    List --> My[내가 쓴 도서]
 ```
 
-## 주요 화면
+## 구현 포인트
 
-| 화면 | 기능 |
-| --- | --- |
-| 도서 목록 | 카드형 도서 목록, 정렬, 페이지 이동 |
-| 도서 상세·본문 | 작품 정보 확인, 본문 읽기, 수정·삭제 진입 |
-| 도서 작성 | 제목·분류·소개·본문 입력, 표지 이미지 선택, 등록·수정 |
-| AI 표지 생성 | 작품 설명에 따른 표지 생성 요청과 이미지 선택 |
-| 마이페이지 | 작성한 도서와 관심 도서 확인 |
-| 로그인 | 네이버 로그인 연결과 인증 후 화면 이동 |
+|기능|사용자에게 제공하는 경험|코드|
+|---|---|---|
+|도서 탐색|페이지별 카드 목록과 최신·인기·제목 정렬|[BookList](src/pages/BookList.jsx)|
+|작품 읽기|기본 정보·소개·본문을 나누고 800자 단위로 본문 탐색|[BookDetail](src/pages/BookDetail.jsx) · [BookBody](src/pages/BookBody.jsx)|
+|원고 작성|등록·수정을 한 폼으로 관리, 직접 수정 URL 접근 시 도서 복원|[BookReg](src/pages/BookReg.jsx)|
+|표지 선택|설명·카테고리를 이미지 요청에 연결하고 최근 3개 후보에서 선택|[BookReg](src/pages/BookReg.jsx)|
+|인증 흐름|OAuth 토큰 처리, 사용자 조회, 보호된 경로와 작성자 버튼 표시|[App](src/App.jsx) · [사용자 상태](src/store/UserContext.jsx)|
 
-화면과 서비스 기능은 팀이 함께 구현했습니다. 김건우의 프론트엔드 참여 범위는 아래 연동·설정 작업입니다.
+## 김건우의 기여
 
-## 담당 역할
+팀 프로젝트에서 **Vite proxy·API 연결 환경 조정과 이미지 생성 모델·해상도 요청 설정 변경**에 참여했습니다.
+도서 API·Validation·JWT·배포 연동을 맡은 백엔드와 함께, 클라이언트부터 API까지 이어지는 흐름을 다뤘습니다.
 
-- **API 연결 환경 조정:** Vite 개발 서버의 프록시와 백엔드 연결 설정을 수정했습니다.
-- **표지 생성 옵션 검토:** 이미지 생성 모델과 해상도 옵션을 비교하고 적용·복원하며 표지 생성 요청 설정을 조정했습니다.
+개인 공개본에서는 다음 개선을 직접 반영했습니다.
 
-백엔드에서 맡은 도서 API·검증·연동 설정 작업은 [Backend 포트폴리오](https://github.com/withoutsultang/aivle-library-backend)에서 확인할 수 있습니다. 프론트엔드의 구체적인 변경 이력은 [기여 내역](docs/CONTRIBUTIONS.md)에 정리했습니다.
+- 수정 화면의 새로고침·직접 접근을 지원하고 저장 후 상세 경로로 연결
+- 등록·수정에 공통 인증 API 클라이언트 적용
+- 사용자 ID 기반 작성자 버튼 표시, 안정적인 사용자 Context와 요청 취소 처리
+- 이미지 로드 실패 시 대체 표지 표시와 새 URL 재시도
+- 서버 API를 통한 AI 표지 생성과 세로·정사각·가로 비율 선택
+- 페이지별 지연 로딩으로 메인 JavaScript 청크 **약 47.2% 축소** — [빌드 비교](docs/VERIFICATION.md)
+- 화면 회귀 테스트·ESLint·프로덕션 빌드를 CI로 연결
+
+화면 전체와 초기 컴포넌트는 팀의 공동 결과물이며, 본인의 변경 근거는 [기여 문서](docs/CONTRIBUTIONS.md)에 정리했습니다.
 
 ## 기술 스택
 
-| 영역 | 기술 |
-| --- | --- |
-| UI | React 19, JavaScript, MUI 7, Emotion |
-| 라우팅·상태 | React Router 7, Context API |
-| API 통신 | Axios, Fetch |
-| 개발·빌드 | Vite 7 |
-| 테스트 | Vitest, Testing Library |
+**React 19 · JavaScript · React Router 7 · MUI 7 · Emotion · Axios · Vite 7 · Vitest · Testing Library · ESLint**
 
-## 구현 구조
+## 빠른 시작
 
-- **공통 UI:** 도서 카드·표지·리더·페이지네이션을 컴포넌트로 분리했습니다.
-- **인증 흐름:** OAuth 응답의 토큰을 처리하고 사용자 정보를 조회하며, 보호된 페이지의 접근을 제어합니다.
-- **도서 작성 흐름:** 작성·수정 화면을 함께 사용하고 표지 생성 다이얼로그와 이미지 선택 상태를 관리합니다.
-- **API 연결:** API 클라이언트와 공통 경로를 별도 설정 파일에서 관리합니다.
+Node.js 22.12 이상을 사용합니다.
 
-### 코드에서 살펴볼 부분
-
-- [BookReg](src/pages/BookReg.jsx): 도서 작성·수정과 AI 표지 생성·선택 흐름
-- [App](src/App.jsx): 페이지 라우팅과 OAuth 로그인 이후 처리
-- [API 클라이언트](src/config/api.js): 인증 토큰을 포함한 API 요청
-- [Vite 설정](vite.config.js): 로컬 API 프록시와 테스트 환경
-
-## 프로젝트 구조
-
-```text
-src/
-├── pages/        목록·상세·본문·작성·로그인·마이페이지
-├── components/   도서 카드·표지·리더·헤더·페이지네이션
-├── config/       API 클라이언트·공통 상수
-├── store/        사용자 상태
-├── assets/       아이콘
-└── App.jsx       라우팅·인증 흐름
-```
-
-## 실행 방법
-
-Node.js 22.12 이상을 기준으로 합니다.
-
-```sh
+```bash
 git clone https://github.com/withoutsultang/aivle-library-frontend.git
 cd aivle-library-frontend
-git switch dev
-npm ci --ignore-scripts
+npm ci
 npm run dev
 ```
 
-개발 서버는 `/api/v1` 요청을 `http://localhost:8080`으로 전달합니다. 로그인과 도서 API를 사용하려면 백엔드를 함께 실행해야 합니다. 표지 생성에는 별도 외부 API 설정이 필요합니다.
+개발 서버는 `/api/v1`을 `http://localhost:8080`의 백엔드로 전달합니다.
+로그인·도서 저장에는 [백엔드 환경](https://github.com/withoutsultang/aivle-library-backend)이 필요하며, 표지 생성은 백엔드가 서버에 설정된 API 키로 요청합니다.
 
-환경 설정, 빌드·테스트 명령과 현재 제약은 [실행 가이드](docs/RUNNING.md)에 정리했습니다.
+```bash
+npm run lint
+npm test
+npm run build
+```
 
-## 관련 문서
+## 탐색 가이드
 
-- [개인 기여와 변경 이력](docs/CONTRIBUTIONS.md)
-- [환경 설정·실행·테스트](docs/RUNNING.md)
-- [제3자 자료와 의존성 고지](docs/THIRD_PARTY.md)
+- [개인 기여와 커밋 근거](docs/CONTRIBUTIONS.md)
+- [라우팅·상태·API 설계](docs/ARCHITECTURE.md)
+- [환경 설정·실행](docs/RUNNING.md)
+- [테스트·빌드 검증](docs/VERIFICATION.md)
+- [제3자 자료와 출처](docs/THIRD_PARTY.md)
+
+**김건우 · [GitHub](https://github.com/withoutsultang)** | KT AIVLE 팀 프로젝트 기반 개인 포트폴리오

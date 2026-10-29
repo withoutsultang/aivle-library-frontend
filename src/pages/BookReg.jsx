@@ -1,6 +1,6 @@
-import { useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import api from "../config/api.js";
+import { generateCover } from "../services/coverGeneration.js";
 import {
     Box,
     TextField,
@@ -17,46 +17,63 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
-import {baseUrl} from "../config/constants.js";
 
 /**
  * 도서 등록/수정 페이지
  * - 새로운 도서를 등록하거나 기존 도서를 수정합니다.
- * - OpenAI DALL-E 3를 이용한 표지 생성 기능을 제공합니다.
+ * - GPT Image를 이용한 표지 생성 기능을 제공합니다.
  */
 export default function BookReg() {
     const location = useLocation();
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const isEditMode = !!id || location.state?.isEdit;
+    const isEditMode = !!id;
 
     const [book, setBook] = useState(location.state?.book || {
         title: "",
         category: "",
         description: "",
         content: "",
-        coverImageUrl: "",
-        userId: 1 // userid 추가해야함(임의의 user만들어서 테스트)
+        coverImageUrl: ""
     });
 
 
+    const [submitting, setSubmitting] = useState(false);
+    const [formLoading, setFormLoading] = useState(!!id);
+    const [formError, setFormError] = useState("");
+    useEffect(() => {
+        if (!id) return;
+        const controller = new AbortController();
+        Promise.all([
+            api.get(`/books/${id}`, { signal: controller.signal }),
+            api.get(`/books/${id}/detail`, { signal: controller.signal }),
+        ]).then(([info, detail]) => {
+            if (!controller.signal.aborted) setBook({ ...info.data.data, ...detail.data.data });
+        }).catch(error => {
+            if (!controller.signal.aborted) setFormError(error.response?.data?.message ?? "도서를 불러오지 못했습니다.");
+        }).finally(() => {
+            if (!controller.signal.aborted) setFormLoading(false);
+        });
+        return () => controller.abort();
+    }, [id]);
+
     const [open, setOpen] = useState(false);
-    const [apiKey, setApiKey] = useState("");
+
 
     const [loading, setLoading] = useState(false);
 
     // 모델 + 해상도 선택
-    const [selectedModel, setSelectedModel] = useState("1024x1792");
+    const [selectedSize, setSelectedSize] = useState("1024x1536");
 
     // 이미지 목록(최대 3개 유지)
     const [images, setImages] = useState([]);
 
-    // 해상도 매핑 (DALL·E 3용)
+    // 해상도 매핑 (GPT Image용)
     const resolutionMap = {
-        "1024x1792": "1024x1792", // 세로형
+        "1024x1536": "1024x1536", // 세로형
         "1024x1024": "1024x1024", // 정사각형
-        "1792x1024": "1792x1024", // 가로형
+        "1536x1024": "1536x1024", // 가로형
     };
 
     // 입력 변경
@@ -70,7 +87,7 @@ export default function BookReg() {
 
     // 모델 선택
     const handleModelChange = (e) => {
-        setSelectedModel(e.target.value);
+        setSelectedSize(e.target.value);
     };
 
     // ---------------------------------------------
@@ -82,19 +99,14 @@ export default function BookReg() {
     };
 
     // ---------------------------------------------
-    // ⭐ AI 이미지 생성 (DALL·E 3)
+    // ⭐ AI 이미지 생성 (GPT Image)
     // - 사용자가 입력한 설명(description)이나 제목을 바탕으로
     // - 표지 이미지를 생성하여 제안합니다.
     // ---------------------------------------------
     const generateImage = async () => {
-        if (!apiKey) {
-            alert("OpenAI API Key를 입력해주세요.");
-            return;
-        }
-
         setLoading(true);
 
-        const size = resolutionMap[selectedModel];
+        const size = resolutionMap[selectedSize];
 
         // 따옴표 안의 핵심 단어 추출
         const extractKeyword = (text) => {
@@ -112,31 +124,10 @@ export default function BookReg() {
             Design quality: professional bookstore standard, clear title space.
             Avoid: photographs, 3D renders, realistic objects.`;
 
-        console.log("📢 최종 Prompt 전송:", prompt);
+
 
         try {
-            const response = await fetch("https://api.openai.com/v1/images/generations", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({
-                    model: "dall-e-3", // DALL·E 3 API 공식 모델명
-                    prompt,
-                    size,
-                    n: 1
-                })
-            });
-
-            const data = await response.json();
-
-            if (!data.data || !data.data[0]?.url) {
-                alert("이미지 생성 실패");
-                return;
-            }
-
-            const newUrl = data.data[0].url;
+            const newUrl = await generateCover({ prompt, size });
 
             setImages(prev => {
                 const updated = [...prev, newUrl];
@@ -145,7 +136,7 @@ export default function BookReg() {
 
         } catch (error) {
             console.error("이미지 생성 오류:", error);
-            alert("이미지 생성 중 문제가 발생했습니다.");
+            alert(error.response?.data?.message || error.message || "이미지 생성 중 문제가 발생했습니다.");
         } finally {
             setLoading(false);
         }
@@ -157,34 +148,20 @@ export default function BookReg() {
     // - 수정 Мо드(isEditMode)일 경우 PUT, 신규일 경우 POST 요청을 보냅니다.
     // ---------------------------------------------
     const handleSubmit = async () => {
+        if (submitting || formLoading || formError) return;
         if (!book.title || !book.category || !book.description || !book.content) {
             alert("제목, 카테고리, 설명, 본문은 필수 입력 항목입니다.");
             return;
         }
 
+        setSubmitting(true);
         try {
             if (isEditMode) {
-                // 수정 커스텀 api 사용시 동작 안해서 확인 필요
-                await axios.put(
-                    baseUrl + `/books/${id}`,
-                    book,
-                    {
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${sessionStorage.getItem("accessToken")}`
-                        }
-                    }
-                );
+                await api.put(`/books/${id}`, book);
 
                 alert("도서 수정 완료!");
-                navigate(`/bookdetail/${id}`);
+                navigate(`/detail/${id}`);
             } else {
-                // 등록 모드: POST 요청
-                // await axios.post(
-                //     "http://localhost:8080/api/v1/books",
-                //     book,
-                //     { headers: { "Content-Type": "application/json" } }
-                // );
                 await api.post(
                     "/books",
                     book
@@ -194,13 +171,16 @@ export default function BookReg() {
             }
         } catch (error) {
             console.error(error);
-            alert(isEditMode ? "도서 수정 실패!" : "도서 등록 실패!");
-        }
+            alert(error.response?.data?.message ?? (isEditMode ? "도서 수정 실패!" : "도서 등록 실패!"));
+        } finally { setSubmitting(false); }
     };
 
     // ---------------------------------------------
     // JSX 출력
     // ---------------------------------------------
+    if (formLoading) return <Typography role="status">도서를 불러오는 중...</Typography>;
+    if (formError) return <Typography role="alert">{formError}</Typography>;
+
     return (
         <Box sx={{ maxWidth: 600, mx: "auto" }}>
 
@@ -212,13 +192,18 @@ export default function BookReg() {
             <TextField fullWidth sx={{ mb: 2 }} label="카테고리" name="category" value={book.category} onChange={handleChange} />
             <TextField fullWidth sx={{ mb: 2 }} multiline rows={3} label="설명" name="description" value={book.description} onChange={handleChange} />
             <TextField fullWidth sx={{ mb: 2 }} multiline rows={6} label="본문" name="content" value={book.content} onChange={handleChange} />
-            <TextField fullWidth sx={{ mb: 2 }} label="이미지 URL" name="coverImageUrl" value={book.coverImageUrl} onChange={handleChange} />
+            {book.coverImageUrl && (
+                <Box sx={{ mb: 2, textAlign: "center" }}>
+                    <Box component="img" src={book.coverImageUrl} alt="선택한 도서 표지" sx={{ width: 140, height: 180, objectFit: "cover", borderRadius: 1 }} />
+                    <Typography variant="body2">선택한 표지</Typography>
+                </Box>
+            )}
 
             <Button fullWidth variant="outlined" sx={{ mb: 2 }} onClick={openPopup}>
                 AI 이미지 선택
             </Button>
 
-            <Button fullWidth variant="contained" onClick={handleSubmit}>
+            <Button fullWidth variant="contained" disabled={submitting} onClick={handleSubmit}>
                 {isEditMode ? "수정" : "등록"}
             </Button>
 
@@ -234,25 +219,14 @@ export default function BookReg() {
                 <DialogContent>
 
                     <Typography sx={{ fontWeight: 600, mb: 1 }}>
-                        OpenAI API Key:
-                    </Typography>
-                    <TextField
-                        type="password"
-                        value={apiKey}
-                        onChange={(e) => setApiKey(e.target.value)}
-                        fullWidth
-                        sx={{ mb: 3 }}
-                    />
-
-                    <Typography sx={{ fontWeight: 600, mb: 1 }}>
-                        생성 모델 선택:
+                        표지 비율 선택:
                     </Typography>
 
                     <FormControl fullWidth sx={{ mb: 3 }}>
-                        <Select value={selectedModel} onChange={handleModelChange}>
-                            <MenuItem value="1024x1792">📖 세로형 (1024×1792) - 책 표지 추천</MenuItem>
+                        <Select value={selectedSize} onChange={handleModelChange}>
+                            <MenuItem value="1024x1536">📖 세로형 (1024×1536) - 책 표지 추천</MenuItem>
                             <MenuItem value="1024x1024">⬛ 정사각형 (1024×1024)</MenuItem>
-                            <MenuItem value="1792x1024">🖼️ 가로형 (1792×1024)</MenuItem>
+                            <MenuItem value="1536x1024">🖼️ 가로형 (1536×1024)</MenuItem>
                         </Select>
                     </FormControl>
 

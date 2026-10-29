@@ -1,13 +1,13 @@
 import './App.css'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 
-import BookList from "./pages/BookList";
-import BookDetail from "./pages/BookDetail";
-import BookReg from "./pages/BookReg";
-import BookBody from "./pages/BookBody";
-import LoginPage from "./pages/LoginPage";
-import MyPage from "./pages/MyPage";
+const BookList = lazy(() => import("./pages/BookList.jsx"));
+const BookDetail = lazy(() => import("./pages/BookDetail.jsx"));
+const BookReg = lazy(() => import("./pages/BookReg.jsx"));
+const BookBody = lazy(() => import("./pages/BookBody.jsx"));
+const LoginPage = lazy(() => import("./pages/LoginPage.jsx"));
+const MyPage = lazy(() => import("./pages/MyPage.jsx"));
 import ProtectedRoute from "./components/ProtectedRoute";
 
 /**
@@ -18,7 +18,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
  */
 
 import api from "./config/api.js";
-import { useUser } from "./store/UserContext";
+import { useUser } from "./store/useUser.js";
 
 //로그인
 function AuthHandler({ setIsLoggedIn }) {
@@ -35,6 +35,7 @@ function AuthHandler({ setIsLoggedIn }) {
         //URL에서 토큰 파싱
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get("token");
+        if (token) window.history.replaceState({}, "", window.location.pathname);
 
         //로그인 성공
         const handleLoginSuccess = async (token) => {
@@ -51,6 +52,7 @@ function AuthHandler({ setIsLoggedIn }) {
                 navigate("/booklist", { replace: true });
             } catch (e) {
                 console.error("me 호출 실패:", e);
+                setIsLoggedIn(false);
                 sessionStorage.removeItem("accessToken");
                 alert("로그인 처리 중 오류가 발생했습니다.");
                 navigate("/login", { replace: true });
@@ -88,7 +90,7 @@ function App() {
             try {
                 const res = await api.get("/me");
                 setUser(res.data.data);
-            } catch (e) {
+            } catch {
                 sessionStorage.removeItem("accessToken");
                 clearUser();
                 setIsLoggedIn(false);
@@ -99,6 +101,7 @@ function App() {
     }, [user, setUser, clearUser]);
 
     return (
+        <Suspense fallback={<div role="status">서재를 불러오는 중...</div>}>
         <BrowserRouter>
             <Routes>
                 {/* 기본 경로: 로그인 상태에 따라 리다이렉트 */}
@@ -152,6 +155,7 @@ function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </BrowserRouter>
+        </Suspense>
     );
 }
 

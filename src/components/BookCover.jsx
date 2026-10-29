@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { Box } from "@mui/material";
 import noImageIcon from "../assets/icons/noImage.svg";
 
@@ -17,7 +17,8 @@ import noImageIcon from "../assets/icons/noImage.svg";
  * 입력을 할 때 파일 업로드 방식을 사용하는 것도 방법인듯, 일단은 여기서 마무리
  */
 export default function BookCover({ src, alt = "cover", sx = {}, imgProps = {}, placeholderSize = 64 }) {
-    const hasImage = !!src;
+    const [failedSrc, setFailedSrc] = useState(null);
+    const hasImage = !!src && failedSrc !== src;
 
     if (hasImage) {
         return (
@@ -27,6 +28,7 @@ export default function BookCover({ src, alt = "cover", sx = {}, imgProps = {}, 
                 alt={alt}
                 sx={sx}
                 {...imgProps}
+                onError={() => setFailedSrc(src)}
             />
         );
     }
@@ -50,4 +52,3 @@ export default function BookCover({ src, alt = "cover", sx = {}, imgProps = {}, 
         </Box>
     );
 }
-

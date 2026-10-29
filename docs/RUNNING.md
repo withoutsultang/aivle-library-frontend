@@ -1,29 +1,22 @@
-# 환경 설정·실행·테스트
+# 환경 설정과 실행
 
-Node.js 22.12 이상을 기준으로 다음 명령을 사용합니다. 검증 환경은 Node.js 24.14.0입니다.
+Node.js 22.12 이상을 설치합니다.
 
-```sh
-git clone https://github.com/withoutsultang/aivle-library-frontend.git
-cd aivle-library-frontend
-git switch dev
-npm ci --ignore-scripts
+```bash
+npm ci
 npm run dev
 ```
 
-기본 브랜치의 프론트엔드는 `.env`를 요구하지 않습니다. API 기준 경로는 `/api/v1`이며 Vite 개발 서버가 이를 `http://localhost:8080`으로 전달합니다. 정상 API 기능에는 백엔드와 DB·OAuth·AWS 설정이 필요합니다.
+로컬 API는 `/api/v1` → `http://localhost:8080`으로 연결합니다. 로그인과 도서 저장에는 백엔드 환경이 필요합니다.
+API 주소를 분리할 때 `.env.example`을 참고해 `VITE_API_BASE_URL`을 설정합니다.
 
-```sh
-npm run build
-npm test
+```bash
 npm run lint
+npm test
+npm run build
 npm run preview
 ```
 
-`preview`는 빌드 결과 확인용입니다. 개발 서버의 API 프록시가 배포 환경에도 자동으로 제공된다고 가정하면 안 됩니다. 운영 환경에는 `/api/v1` 연결과 SPA 라우팅 설정을 별도로 준비해야 합니다.
+`preview`도 로컬 백엔드 proxy를 지원합니다. S3/CloudFront 또는 다른 정적 호스팅에 배포할 때는 `/api/v1` origin과 SPA의 index.html fallback을 구성합니다. 프론트 배포용 CodeBuild 명세는 `buildspec.yml`에 있습니다.
 
-표지 생성 화면은 사용자가 입력한 API 키로 브라우저에서 외부 이미지 API를 직접 호출하는 원본 구현입니다. 키를 README·소스·스크린샷에 넣지 마세요. 이 경로는 유료 API를 사용할 수 있으며, 이번 검증에서는 호출하지 않았습니다. 공개 데모 제공 여부와 키 취급 방식은 별도 검토 항목입니다. 코드 기능은 변경하지 않았습니다.
-
-
-## 테스트와 현재 제약
-
-`npm run build`와 기존 화면 테스트 3개가 통과했습니다. 빌드 시 JS 번들 크기 경고가 있습니다. `npm run lint`에는 기존 오류 5개가 남아 있습니다: `App.jsx:91`, `BookBody.test.jsx:1`, `BookBody.test.jsx:3`, `BookDetail.jsx:87`의 미사용 변수 및 `UserContext.jsx:18`의 Fast Refresh 내보내기 규칙입니다. 로그인·저장·외부 이미지 생성의 실서비스 통합 흐름은 별도 확인이 필요합니다.
+표지 생성은 인증된 API를 통해 서버에서 처리합니다. `OPENAI_API_KEY`는 백엔드 환경변수로 설정하며 프론트엔드에 입력하거나 빌드에 포함하지 않습니다. 테스트에서는 실제 유료 API 요청을 실행하지 않습니다.
