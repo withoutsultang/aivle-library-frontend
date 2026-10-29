@@ -1,5 +1,17 @@
 # 화면과 상태 설계
 
+## 4차 개발 → 5차 AWS 확장
+
+4차는 React·Spring Boot·H2 기반 로컬 개발, 5차는 AWS 배포·환경 구성에 초점을 맞춘 프로젝트입니다. 김건우는 4차 백엔드 API와 인증/인가 개선, 5차 AWS 인프라·환경 설정·배포 전반을 담당했고 일부 작업은 팀원과 공동 수행했습니다.
+
+![4차 로컬 구조](assets/phase-04-local.png)
+
+![5차 AWS 서비스 구조](assets/phase-05-aws.png)
+
+![5차 AWS CI/CD](assets/phase-05-pipeline.png)
+
+AWS의 서비스별 역할·배포 경로·작성 근거는 [AWS_DEPLOYMENT.md](AWS_DEPLOYMENT.md)에 정리했습니다. 아래 애플리케이션 설계는 현재 개인 공개본을 기준으로 설명합니다.
+
 ## 라우팅
 
 |경로|화면|
