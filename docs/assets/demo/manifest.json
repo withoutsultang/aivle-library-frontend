@@ -1,0 +1,78 @@
+{
+  "captureDateKST": "2026-11-03",
+  "scope": "Actual local demo browser render; sample accounts, books and covers; not historical AWS production footage.",
+  "realComponents": [
+    "React production demo build",
+    "Spring REST/Security/JPA",
+    "H2 SQL database"
+  ],
+  "localAdapters": [
+    "Demo session",
+    "Sample illustration provider",
+    "In-memory S3 adapter",
+    "Stubbed DynamoDB"
+  ],
+  "durationSeconds": 20.88,
+  "videoSource": "showcase.webm",
+  "derivedFormats": [
+    "showcase.mp4",
+    "showcase-preview.gif"
+  ],
+  "files": [
+    {
+      "path": "01-login.png",
+      "bytes": 22589,
+      "sha256": "60485e0754faa3106397f0f6075f01fb3321f17bee62cb02d275276117a7dc1e"
+    },
+    {
+      "path": "02-library.png",
+      "bytes": 48812,
+      "sha256": "136e4e298cbacc01d6925975f106bd00d28a863d27f109cb8e47d92385dbd0ef"
+    },
+    {
+      "path": "03-cover-selection.png",
+      "bytes": 44527,
+      "sha256": "53980258cd61b5dfdac9ed9d1055cf1c14f40a46acbdec2c7a2addf22ae192f9"
+    },
+    {
+      "path": "04-manuscript.png",
+      "bytes": 40482,
+      "sha256": "301ebd1ca9f98aa6f147182706aae8a73cbaf6ef94eeb9dc5ffd398324c1057b"
+    },
+    {
+      "path": "05-book-detail.png",
+      "bytes": 35769,
+      "sha256": "96973e5a820b9de02767bfe3bb620cd1e7556c6201c60acd1183b9ee848ccb86"
+    },
+    {
+      "path": "06-reader.png",
+      "bytes": 154706,
+      "sha256": "6f69bec714f9a428c84db7eaf88022f69f50d84e4684138f143f312ffacbd207"
+    },
+    {
+      "path": "07-revised.png",
+      "bytes": 37221,
+      "sha256": "34080564ce674d88869d4422b761d607426ccf7534f840c7dd6dc8ea75a739da"
+    },
+    {
+      "path": "08-published-library.png",
+      "bytes": 57975,
+      "sha256": "74346aaecba80454a1d0ecaafab07285765262ae9a3e385aaf3525dce4a8bc5f"
+    },
+    {
+      "path": "showcase-preview.gif",
+      "bytes": 2189735,
+      "sha256": "f44b28f5d9ad74c8c7f0e8173d0a7fa16c7db32df35c24d1c8489ed3008983c0"
+    },
+    {
+      "path": "showcase.mp4",
+      "bytes": 386204,
+      "sha256": "bf743317a4579d3fbd2039b95b5e76e9d957ffe7febfca1b33d0a15f930fadc8"
+    },
+    {
+      "path": "showcase.webm",
+      "bytes": 2606224,
+      "sha256": "bf4bd5cd628534836f7a6d29a8b9a5c531d00466d70de46dada639459dc725b7"
+    }
+  ]
+}

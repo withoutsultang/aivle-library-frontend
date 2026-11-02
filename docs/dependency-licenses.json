@@ -4,7 +4,7 @@
     "MIT": 322,
     "BlueOak-1.0.0": 2,
     "MIT-0": 2,
-    "Apache-2.0": 15,
+    "Apache-2.0": 18,
     "Python-2.0": 1,
     "CC-BY-4.0": 1,
     "ISC": 14,
@@ -2243,6 +2243,24 @@
       "package": "zod-validation-error",
       "version": "4.0.2",
       "license": "MIT",
+      "direct": false
+    },
+    {
+      "package": "@playwright/test",
+      "version": "1.64.1",
+      "license": "Apache-2.0",
+      "direct": true
+    },
+    {
+      "package": "playwright",
+      "version": "1.64.1",
+      "license": "Apache-2.0",
+      "direct": false
+    },
+    {
+      "package": "playwright-core",
+      "version": "1.64.1",
+      "license": "Apache-2.0",
       "direct": false
     }
   ]

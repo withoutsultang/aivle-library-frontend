@@ -26,6 +26,12 @@ dist-ssr
 .env
 .env.*
 !.env.example
+/test-results/
+/playwright-report/
+/e2e-results.json
+/demo-capture/
+__pycache__/
+*.pyc
 
 # Local credentials
 .env

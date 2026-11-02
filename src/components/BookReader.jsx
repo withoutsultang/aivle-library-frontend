@@ -69,6 +69,7 @@ export default function BookReader({ title, paginatedContent, totalPages, page, 
 
             <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                 <IconButton
+                    aria-label="이전 페이지"
                     onClick={handlePrevPage}
                     disabled={page === 1}
                     sx={{
@@ -100,6 +101,7 @@ export default function BookReader({ title, paginatedContent, totalPages, page, 
                 </Typography>
 
                 <IconButton
+                    aria-label="다음 페이지"
                     onClick={handleNextPage}
                     disabled={page === totalPages}
                     sx={{

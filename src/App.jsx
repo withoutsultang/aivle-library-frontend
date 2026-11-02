@@ -1,5 +1,5 @@
 import './App.css'
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 
 const BookList = lazy(() => import("./pages/BookList.jsx"));
@@ -76,6 +76,12 @@ function AuthHandler({ setIsLoggedIn }) {
  * - 라우팅 설정 및 전역 로그인 상태 관리를 담당합니다.
  */
 
+function ScrollToTop() {
+    const { pathname } = useLocation();
+    useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+    return null;
+}
+
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(() => !!sessionStorage.getItem("accessToken"));
     const { user, setUser, clearUser } = useUser();
@@ -102,7 +108,11 @@ function App() {
 
     return (
         <Suspense fallback={<div role="status">서재를 불러오는 중...</div>}>
+        {import.meta.env.DEMO_MODE && <div style={{ padding: '8px 16px', background: '#173f35', color: '#f5e9c9', textAlign: 'center', fontSize: 13, position: 'sticky', top: 0, zIndex: 1400 }}>
+            포트폴리오 로컬 데모 · 예시 도서와 표지로 서비스 흐름을 체험합니다
+        </div>}
         <BrowserRouter>
+            <ScrollToTop />
             <Routes>
                 {/* 기본 경로: 로그인 상태에 따라 리다이렉트 */}
                 <Route path="/" element={<Navigate to={isLoggedIn ? "/booklist" : "/login"} replace />} />

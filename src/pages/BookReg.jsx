@@ -195,12 +195,12 @@ export default function BookReg() {
             {book.coverImageUrl && (
                 <Box sx={{ mb: 2, textAlign: "center" }}>
                     <Box component="img" src={book.coverImageUrl} alt="선택한 도서 표지" sx={{ width: 140, height: 180, objectFit: "cover", borderRadius: 1 }} />
-                    <Typography variant="body2">선택한 표지</Typography>
+                    <Typography variant="body2" color="text.secondary">선택한 표지</Typography>
                 </Box>
             )}
 
             <Button fullWidth variant="outlined" sx={{ mb: 2 }} onClick={openPopup}>
-                AI 이미지 선택
+                {import.meta.env.DEMO_MODE ? '예시 표지 선택' : 'AI 이미지 선택'}
             </Button>
 
             <Button fullWidth variant="contained" disabled={submitting} onClick={handleSubmit}>
@@ -212,7 +212,7 @@ export default function BookReg() {
             {/* --------------------------------------------- */}
             <Dialog open={open} onClose={closePopup} maxWidth="sm" fullWidth>
                 <DialogTitle sx={{ display: "flex", justifyContent: "space-between" }}>
-                    AI 표지 생성
+                    {import.meta.env.DEMO_MODE ? '예시 표지 둘러보기' : 'AI 표지 생성'}
                     <IconButton onClick={closePopup}><CloseIcon /></IconButton>
                 </DialogTitle>
 
@@ -237,7 +237,7 @@ export default function BookReg() {
                         onClick={generateImage}
                         disabled={loading}
                     >
-                        {loading ? "이미지 생성 중..." : "AI 표지 1장 생성"}
+                        {loading ? "표지 준비 중..." : import.meta.env.DEMO_MODE ? "예시 표지 1장 추가" : "AI 표지 1장 생성"}
                     </Button>
 
                     {/* ⭐ 로딩 스피너 표시 */}

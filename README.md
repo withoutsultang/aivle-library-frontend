@@ -9,6 +9,16 @@
 
 [Backend](https://github.com/withoutsultang/aivle-library-backend) · [개인 기여](docs/CONTRIBUTIONS.md) · [AWS 구성](docs/AWS_DEPLOYMENT.md) · [화면 설계](docs/ARCHITECTURE.md) · [실행](docs/RUNNING.md) · [검증](docs/VERIFICATION.md)
 
+## 실제 화면과 짧은 시연
+
+![현재 공개본 로컬 데모 시연](docs/assets/demo/showcase-preview.gif)
+
+[MP4 시연](docs/assets/demo/showcase.mp4) · [화면 갤러리·데모 실행](docs/DEMO.md)
+
+2026년 11월 현재 공개본을 실행해 촬영한 약 21초 시연입니다. 예시 계정·표지를 사용하고, 도서 등록·수정·조회는 실제 Spring API와 SQL DB로 처리합니다.
+
+**전체 흐름 검증:** 브라우저 E2E 6개 · Spring–SQL 통합 테스트 3개 · 운영 빌드의 데모 기능 제외 검사.
+
 ## 두 단계로 확장한 프로젝트
 
 |단계|서비스와 실행 환경|김건우의 역할|

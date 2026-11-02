@@ -1,5 +1,20 @@
 # 검증 기록
 
+## 2026-11-03 · 로컬 데모와 실제 API·SQL 통합 검증
+
+|검증|확인 결과|
+|---|---|
+|Playwright Chromium 브라우저 E2E|**6개 통과** · 등록·수정·본문·권한·입력 검증·삭제|
+|Spring·Security·JPA·H2 통합 테스트|**3개 통과** · 관계형 행 생성·변경·삭제와 거부 요청의 원문 유지|
+|기존 단위·컴포넌트 테스트|백엔드 **26개**, 프론트 **10개** 통과|
+|데모 분리|운영 JAR의 데모·DB 관측·H2·Mockito 제외, 운영 프론트의 데모 세션·표지 UI 제외 검사|
+|시연 실행|등록·수정 SQL 확인을 포함한 **1개 녹화 시나리오** 통과, 실제 화면 8장·WebM·MP4·GIF|
+
+상세 실행과 범위는 [DEMO.md](DEMO.md)에서 확인합니다. 브라우저의 CRUD 응답은 가짜 응답으로 대체하지 않으며, 독립된 SQL 조회로 저장 결과를 확인합니다. 네이버·OpenAI·AWS는 로컬 어댑터로 분리하고 H2를 사용한 검증이며, 운영 클라우드 검증과 구분합니다.
+
+---
+
+
 ## 2026-11-02 · AWS 인프라 연결
 
 프론트 배포 경로·SPA 라우팅·API 캐시 분리를 포함한 [Terraform 검증](https://github.com/withoutsultang/aivle-library-backend/blob/dev/docs/VERIFICATION.md)을 추가했습니다. 프론트의 AWS CodeBuild 명세는 Node.js 22와 `npm ci`로 맞췄습니다. AWS 계정의 실제 배포 완료와 모의 테스트를 구분합니다.

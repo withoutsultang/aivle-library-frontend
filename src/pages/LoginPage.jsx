@@ -11,6 +11,17 @@ import axios from 'axios';
  */
 export default function LoginPage() {
     const [loading, setLoading] = useState(false);
+    const demoMode = import.meta.env.DEMO_MODE;
+    const handleDemoLogin = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.post(`${baseUrl}/auth/demo/session`);
+            window.location.assign(`/oauth/success?token=${encodeURIComponent(response.data.data.token)}`);
+        } catch {
+            alert('데모 서버를 먼저 실행해 주세요.');
+            setLoading(false);
+        }
+    };
 
     // 네이버 로그인 핸들러
     const handleNaverLogin = async () => {
@@ -63,16 +74,16 @@ export default function LoginPage() {
                             모두의 서재
                         </Typography>
                         <Typography sx={{ margin: '8px 0 0 0', color: '#6D4C41' }}>
-                            로그인이 필요합니다.
+                            {demoMode ? '나의 이야기가 책이 되는 곳' : '로그인이 필요합니다.'}
                         </Typography>
                     </Box>
 
                     <Button
                         variant="contained"
-                        onClick={handleNaverLogin}
+                        onClick={demoMode ? handleDemoLogin : handleNaverLogin}
                         disabled={loading}
                         sx={{
-                            backgroundColor: '#03C75A',
+                            backgroundColor: demoMode ? '#173f35' : '#03C75A',
                             '&:hover': {
                                 backgroundColor: '#02b351',
                             },
@@ -84,7 +95,7 @@ export default function LoginPage() {
                         {loading ? (
                             <CircularProgress size={24} sx={{ color: 'white' }} />
                         ) : (
-                            '네이버 아이디로 로그인'
+                            demoMode ? '데모 서재 둘러보기' : '네이버 아이디로 로그인'
                         )}
                     </Button>
                 </Paper>

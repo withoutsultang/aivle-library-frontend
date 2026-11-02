@@ -1,0 +1,45 @@
+{
+  "scope": "Local real React production build / Spring REST+Security+JPA / H2 SQL",
+  "externalAdapters": [
+    "Demo session instead of Naver OAuth",
+    "Local sample cover provider and in-memory object storage",
+    "Stubbed DynamoDB counter"
+  ],
+  "browser": "Playwright Chromium",
+  "runStartedAt": "2026-11-02T16:49:29.061Z",
+  "durationMs": 53304.063,
+  "passed": 6,
+  "failed": 0,
+  "cases": [
+    {
+      "title": "등록: 브라우저 → 실제 API 201 → books·book_details SQL 행 → 새로고침 조회",
+      "passed": true,
+      "durationMs": 2733
+    },
+    {
+      "title": "수정: 직접 URL 접근·재로딩 → 저장 → SQL 본문 갱신·기존 표지 key 유지",
+      "passed": true,
+      "durationMs": 2324
+    },
+    {
+      "title": "본문 읽기: 저장된 1600자 본문을 800자씩 두 페이지로 탐색",
+      "passed": true,
+      "durationMs": 1398
+    },
+    {
+      "title": "작성자 권한: 다른 사용자의 변경 요청은 403, SQL 원문은 유지",
+      "passed": true,
+      "durationMs": 1187
+    },
+    {
+      "title": "실제 API 검증: 잘못된 Bearer 401·빈 제목 400·원문 유지",
+      "passed": true,
+      "durationMs": 958
+    },
+    {
+      "title": "삭제: 화면 확인 → 실제 API → SQL 행 제거 → 목록에서 제외",
+      "passed": true,
+      "durationMs": 1424
+    }
+  ]
+}

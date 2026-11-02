@@ -81,7 +81,7 @@ export default function BookDetail() {
     if (loading) {
         return (
             <Container sx={{ p: 4 }}>
-                <Typography>로딩 중...</Typography>
+                <Typography color="text.primary" role="status">로딩 중...</Typography>
             </Container>
         );
     }

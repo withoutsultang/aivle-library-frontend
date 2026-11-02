@@ -8,7 +8,13 @@
     "test": "vitest run",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:demo": "vite --mode demo --host 127.0.0.1 --port 15173 --strictPort",
+    "build:demo": "vite build --mode demo",
+    "preview:demo": "vite preview --mode demo --host 127.0.0.1 --port 15173 --strictPort",
+    "test:e2e": "playwright test && node scripts/summarize-e2e.js",
+    "demo:record": "node scripts/record-demo.js",
+    "verify:production": "node scripts/verify-production.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -22,6 +28,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "1.64.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@types/react": "^19.2.5",
