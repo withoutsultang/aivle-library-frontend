@@ -1,5 +1,11 @@
 # 검증 기록
 
+## 2026-11-02 · AWS 인프라 연결
+
+프론트 배포 경로·SPA 라우팅·API 캐시 분리를 포함한 [Terraform 검증](https://github.com/withoutsultang/aivle-library-backend/blob/dev/docs/VERIFICATION.md)을 추가했습니다. 프론트의 AWS CodeBuild 명세는 Node.js 22와 `npm ci`로 맞췄습니다. AWS 계정의 실제 배포 완료와 모의 테스트를 구분합니다.
+
+---
+
 2026-10-29 · 개인 공개본 고도화 검증
 
 ## 코드 검사·테스트·빌드

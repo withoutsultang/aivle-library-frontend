@@ -52,6 +52,17 @@
 
 자세한 구성과 기여 근거는 [AWS 배포·환경 구성](docs/AWS_DEPLOYMENT.md), [개인 기여](docs/CONTRIBUTIONS.md)에서 확인할 수 있습니다. 이미지는 5차 팀 코드·콘솔 자료를 재구성한 설명도이며, 인스턴스 개수는 구조를 보여주기 위한 예시입니다.
 
+## 개인 공개본 고도화 · AWS 인프라 코드화
+
+2026년 11월에는 프론트·백엔드 AWS 구성을 **Terraform 코드로 재현하는 개인 고도화**를 추가했습니다. 인프라는 백엔드 저장소에서 함께 관리합니다.
+
+- S3 비공개 정적 호스팅·CloudFront OAC, 내부 ALB를 연결하는 VPC origin
+- 화면 직접 접근을 지원하는 SPA 라우팅, HTML·해시 자산·API별 캐시 정책 분리
+- Node.js 22 기반 프론트 검사·테스트·빌드 → 수동 승인 → S3 배포 파이프라인
+- AWS 인증 없이 실행하는 인프라 모의 테스트와 CI
+
+[인프라 코드·실행 가이드](https://github.com/withoutsultang/aivle-library-backend/tree/dev/infra/terraform) · [검증 workflow](https://github.com/withoutsultang/aivle-library-backend/actions/workflows/infrastructure.yml)
+
 ## 개인 공개본 고도화 · 2026년 10월
 
 - 직접 수정 URL·새로고침에서 원고 복원, 저장 후 상세 경로 이동

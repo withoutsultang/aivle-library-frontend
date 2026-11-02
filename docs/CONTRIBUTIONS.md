@@ -44,6 +44,12 @@
 
 정적 프론트 배포, API 라우팅, OAuth redirect·CORS, 백엔드 실행·설정 주입을 함께 다루며 **사용자 화면에서 AWS 실행 환경까지 이어지는 연결 작업**을 수행했습니다. 화면 전체와 S3·DynamoDB 기능 코드·모니터링에는 팀원의 구현과 공동 작업이 포함됩니다.
 
+## 개인 공개본 고도화 · 2026년 11월
+
+프론트 배포까지 포함하는 AWS Terraform 구성을 백엔드 저장소에 추가했습니다. 정적 S3·CloudFront, API VPC origin, SPA 라우팅·캐시 분리, Node.js 22 기반 테스트·빌드·승인·배포 흐름을 코드와 모의 테스트로 정리했습니다. 기존 프론트 CodeBuild 명세도 Node.js 22·고정 의존성 설치에 맞췄습니다.
+
+[인프라 코드·검증·실행 가이드](https://github.com/withoutsultang/aivle-library-backend/tree/dev/infra/terraform)
+
 ## 개인 공개본 고도화 · 2026년 10월
 
 수정 URL 직접 접근·새로고침, 공통 인증 API, 사용자 Context, 요청 취소, 표지 fallback과 서버 기반 표지 생성을 개선했습니다. 페이지별 지연 로딩으로 메인 JS 청크를 약 47.2% 축소했고 화면·API 계약 테스트 10개와 ESLint·빌드 CI를 구성했습니다. 4·5차 프로젝트 당시 작업과 구분한 후속 개선입니다.
